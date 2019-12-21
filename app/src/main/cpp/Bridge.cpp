@@ -2,6 +2,8 @@
 // Created by Ananta Yudica on 20/12/2019.
 //
 
+#include "Information.h"
+
 #include "jni.h"
 #include "Log.h"
 
@@ -11,6 +13,7 @@ jint Java_com_example_android_1sensor_1sample_Native_onCreate(
     jobject pThis)
 {
     LOG_DEBUG("native", "onCreate()");
+    Information::CreateInstance("android", pEnv);
     return 1;
 }
 
@@ -65,6 +68,7 @@ jint Java_com_example_android_1sensor_1sample_Native_onDestroy(
         jobject pThis)
 {
     LOG_DEBUG("native", "onDestroy()");
+    Information::DestroyInstance();
     return 1;
 }
 
