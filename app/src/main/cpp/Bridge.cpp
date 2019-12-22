@@ -3,6 +3,7 @@
 //
 
 #include "Information.h"
+#include "SensorManager.h"
 
 #include "jni.h"
 #include "Log.h"
@@ -14,6 +15,7 @@ jint Java_com_example_android_1sensor_1sample_Native_onCreate(
 {
     LOG_DEBUG("native", "onCreate()");
     Information::CreateInstance("android", pEnv);
+    SensorManager::CreateInstance();
     return 1;
 }
 
@@ -68,6 +70,7 @@ jint Java_com_example_android_1sensor_1sample_Native_onDestroy(
         jobject pThis)
 {
     LOG_DEBUG("native", "onDestroy()");
+    SensorManager::DestroyInstance();
     Information::DestroyInstance();
     return 1;
 }
