@@ -20,21 +20,21 @@ private:
     float m_resolution;
     std::shared_ptr<char> m_name;
     std::shared_ptr<char> m_vendor;
-    ASensor * m_ptr;
+    ASensor const* m_ptr;
 public:
-    Sensor(ASensor * ptr);
+    Sensor(ASensor const* ptr);
 public:
     Sensor(const Sensor & cpy);
     Sensor(Sensor && mov);
 public:
     ~Sensor();
 private:
-    void Init(ASensor * ptr);
-    void InitType(ASensor * ptr);
-    void InitMinDelay(ASensor * ptr);
-    void InitResolution(ASensor * ptr);
-    void InitName(ASensor * ptr);
-    void InitVendor(ASensor * ptr);
+    void Init(ASensor const* ptr);
+    void InitType(ASensor const* ptr);
+    void InitMinDelay(ASensor const* ptr);
+    void InitResolution(ASensor const* ptr);
+    void InitName(ASensor const* ptr);
+    void InitVendor(ASensor const* ptr);
 public:
     Sensor & operator=(const Sensor &) = delete;
     Sensor & operator=(Sensor &&) = delete;
@@ -44,7 +44,7 @@ public:
     float Resolution() const;
     const char * Name() const;
     const char * Vendor() const;
-    ASensor * Pointer();
+    ASensor const* Pointer();
 public:
     operator bool() const;
     bool operator==(const Sensor & sensor) const;

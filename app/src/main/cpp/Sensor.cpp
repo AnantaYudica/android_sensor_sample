@@ -17,7 +17,7 @@ void Sensor::__SetValueSharedString(std::shared_ptr<char> & val, const char * cs
     val.get()[size] = '\0';
 }
 
-Sensor::Sensor(ASensor * ptr) :
+Sensor::Sensor(ASensor const* ptr) :
     m_type(ASENSOR_TYPE_INVALID),
     m_minDelay(-1),
     m_resolution(0.0),
@@ -68,7 +68,7 @@ Sensor::~Sensor()
     m_ptr = nullptr;
 }
 
-void Sensor::Init(ASensor * ptr)
+void Sensor::Init(ASensor const* ptr)
 {
     LOG_DEBUG("sensor", "Init(...)");
     InitType(ptr);
@@ -78,28 +78,28 @@ void Sensor::Init(ASensor * ptr)
     InitVendor(ptr);
 }
 
-void Sensor::InitType(ASensor * ptr)
+void Sensor::InitType(ASensor const* ptr)
 {
     LOG_DEBUG("sensor", "InitType(...)");
     m_type = ASensor_getType(ptr);
     LOG_DEBUG("sensor", "type = %d", m_type);
 }
 
-void Sensor::InitMinDelay(ASensor * ptr)
+void Sensor::InitMinDelay(ASensor const* ptr)
 {
     LOG_DEBUG("sensor", "InitMinDelay(...)");
     m_minDelay = ASensor_getMinDelay(ptr);
     LOG_DEBUG("sensor", "min delay = %d", m_minDelay);
 }
 
-void Sensor::InitResolution(ASensor * ptr)
+void Sensor::InitResolution(ASensor const* ptr)
 {
     LOG_DEBUG("sensor", "InitResolution(...)");
     m_resolution = ASensor_getResolution(ptr);
     LOG_DEBUG("sensor", "resolution = %f", m_resolution);
 }
 
-void Sensor::InitName(ASensor * ptr)
+void Sensor::InitName(ASensor const* ptr)
 {
     LOG_DEBUG("sensor", "InitName(...)");
     const char * cstr = ASensor_getName(ptr);
@@ -108,7 +108,7 @@ void Sensor::InitName(ASensor * ptr)
     LOG_DEBUG("sensor", "name = \"%s\"", m_name.get());
 }
 
-void Sensor::InitVendor(ASensor * ptr)
+void Sensor::InitVendor(ASensor const* ptr)
 {
     LOG_DEBUG("sensor", "InitVendor(...)");
     const char * cstr = ASensor_getVendor(ptr);
@@ -143,7 +143,7 @@ const char * Sensor::Vendor() const
     return m_vendor.get();
 }
 
-ASensor * Sensor::Pointer()
+ASensor const* Sensor::Pointer()
 {
     return m_ptr;
 }
