@@ -6,7 +6,9 @@ add_library(Bridge SHARED ../src/main/cpp/Bridge.cpp)
 
 add_library(Information SHARED ../src/main/cpp/Information.cpp)
 
-add_library(Sensor SHARED ../src/main/cpp/Sensor.cpp)
+add_library(Sensor SHARED
+        ../src/main/cpp/Sensor.cpp
+        ../src/main/cpp/SensorManager.cpp)
 
 find_library(Loglib log)
 
