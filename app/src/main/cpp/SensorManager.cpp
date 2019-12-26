@@ -4,14 +4,34 @@
 
 #include "SensorManager.h"
 #include "Sensor.h"
+#include "android/os/build/Version.h"
+#include "Log.h"
 
 #include <android/Sensor.h>
-#include <android/log.h>
+
+#include <dlfcn.h>
 
 SensorManager * SensorManager::ms_instance = nullptr;
 
+void * SensorManager::ms_handle = nullptr;
+
+ASensorManager* (*SensorManager::ms_getInstanceForPackage)(const char *) = nullptr;
+
+ASensorManager * SensorManager::__GetAndroidInstance()
+{
+    static ASensorManager* (*GetInstanceFunc)(const char *) = nullptr;
+    static const char * package = "android_sensor_sample.sensormanager";
+    if (android::os::build::Version::SDK() >= 21)
+    {
+        if (ms_getInstanceForPackage)
+            return ms_getInstanceForPackage(package);
+    }
+    return ASensorManager_getInstance();
+}
+
 SensorManager & SensorManager::CreateInstance()
 {
+    LOG_DEBUG("SensorManger", "SensorManager::CreateInstance(...)");
     if (!ms_instance)
         ms_instance = new SensorManager();
     return *ms_instance;
@@ -24,13 +44,39 @@ SensorManager & SensorManager::GetInstance()
 
 void SensorManager::DestroyInstance()
 {
+    LOG_DEBUG("SensorManger", "SensorManager::DestroyInstance(...)");
     if (ms_instance) delete ms_instance;
     ms_instance = nullptr;
+}
+void SensorManager::Open()
+{
+    LOG_DEBUG("SensorManger", "SensorManager::Open(...)");
+    if (!ms_handle)
+    {
+        ms_handle = dlopen(ms_library_cstr, RTLD_LAZY);
+        LOG_DEBUG("SensorManger", "handle : %p", ms_handle);
+
+        if (ms_handle)
+            ms_getInstanceForPackage = (GetInstanceForPackageType *) dlsym(ms_handle,
+                    "ASensorManager_getInstanceForPackage");
+
+        LOG_DEBUG("SensorManger", "ASensorManager_getInstanceForPackage : %p",
+                (void *)ms_getInstanceForPackage);
+    }
+}
+
+void SensorManager::Close()
+{
+    LOG_DEBUG("SensorManger", "SensorManager::Close(...)");
+    if (ms_handle)
+        dlclose(ms_handle);
+    ms_handle = nullptr;
 }
 
 void SensorManager::Init()
 {
-    auto a_sensor_manager = ASensorManager_getInstance();
+    LOG_DEBUG("SensorManger", "SensorManager::Init(...)");
+    auto a_sensor_manager = __GetAndroidInstance();
     if (!a_sensor_manager) return;
     const auto size = ASensorManager_getSensorList(a_sensor_manager, nullptr);
     if (!InitSensor(size)) return;
@@ -45,6 +91,7 @@ void SensorManager::Init()
 
 bool SensorManager::InitSensor(const size_t & size)
 {
+    LOG_DEBUG("SensorManger", "SensorManager::InitSensor(...)");
     if (m_sensors || size == 0) return false;
     m_sensorsSize = size;
     m_sensors = new Sensor*[size];
@@ -55,11 +102,13 @@ SensorManager::SensorManager() :
     m_sensors(nullptr),
     m_sensorsSize(0)
 {
+    LOG_DEBUG("SensorManger", "Constructor(...)");
     Init();
 }
 
 SensorManager::~SensorManager()
 {
+    LOG_DEBUG("SensorManger", "Destructor(...)");
     for (auto i = 0; i < m_sensorsSize; ++i)
         delete m_sensors[i];
     if (m_sensors) delete[] m_sensors;

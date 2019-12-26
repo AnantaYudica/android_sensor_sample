@@ -19,11 +19,21 @@ public:
     typedef Sensor ValueType;
     typedef std::reference_wrapper<Sensor> ValueRefType;
 private:
+    typedef ASensorManager* (GetInstanceForPackageType)(const char *);
+private:
+    static constexpr const char * ms_library_cstr = "libandroid.so";
+private:
     static SensorManager * ms_instance;
+    static void * ms_handle;
+    static GetInstanceForPackageType * ms_getInstanceForPackage;
+private:
+    static ASensorManager * __GetAndroidInstance();
 public:
     static SensorManager & CreateInstance();
     static SensorManager & GetInstance();
     static void DestroyInstance();
+    static void Open();
+    static void Close();
 private:
     Sensor ** m_sensors;
     size_t m_sensorsSize;
