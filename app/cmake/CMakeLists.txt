@@ -4,6 +4,9 @@ add_compile_options(-std=c++11)
 
 add_library(Bridge SHARED ../src/main/cpp/Bridge.cpp)
 
+add_library(Android SHARED
+        ../src/main/cpp/android/os/build/Version.cpp)
+
 add_library(Information SHARED ../src/main/cpp/Information.cpp)
 
 add_library(Sensor SHARED
@@ -16,6 +19,8 @@ find_library(Androidlib android)
 
 target_link_libraries(Information ${Loglib})
 
-target_link_libraries(Sensor ${Loglib} ${Androidlib})
+target_link_libraries(Android ${Loglib})
+
+target_link_libraries(Sensor ${Loglib} ${Androidlib} Android)
 
 target_link_libraries(Bridge ${Loglib} Information Sensor)
