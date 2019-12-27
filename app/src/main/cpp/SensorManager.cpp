@@ -94,11 +94,13 @@ bool SensorManager::InitSensors()
     if (size == 0) return false;
     m_sensorsSize = size;
     m_sensors = new Sensor*[size];
+    m_sensorEvents = new SensorEvent*[size];
     ASensorList a_sensor_list = new ASensor*[size];
     ASensorManager_getSensorList(m_sensorManager, &a_sensor_list);
     for (auto i = 0; i < size; ++i)
     {
         m_sensors[i] = new Sensor(a_sensor_list[i]);
+        m_sensorEvents[i] = nullptr;
     }
     delete[] a_sensor_list;
     return true;
@@ -117,8 +119,12 @@ SensorManager::~SensorManager()
 {
     LOG_DEBUG("SensorManger", "Destructor(...)");
     for (auto i = 0; i < m_sensorsSize; ++i)
+    {
         delete m_sensors[i];
+        if (m_sensorEvents[i]) delete m_sensorEvents[i];
+    }
     if (m_sensors) delete[] m_sensors;
+    if (m_sensorEvents) delete[] m_sensorEvents;
     m_sensorsSize = 0;
     m_sensors = nullptr;
 }
@@ -150,6 +156,54 @@ SensorManager::Find(const int & type)
             res.push_back(std::pair<KeyType, ValueRefType>(i, *(m_sensors[i])));
     }
     return res;
+}
+
+typename SensorManager::SensorEventRefType
+SensorManager::GetSensorEvent(const KeyType & key)
+{
+    if (!m_sensorEvents[key])
+        m_sensorEvents[key] = new SensorEvent(m_sensorManager, m_sensors[key]);
+    return SensorEventRefType(*(m_sensorEvents[key]));
+}
+
+typename SensorManager::SensorEventRefType
+SensorManager::GetSensorEvent(const KeyType & key, const int & delay)
+{
+    if (!m_sensorEvents[key])
+        m_sensorEvents[key] = new SensorEvent(m_sensorManager, m_sensors[key], delay);
+    return SensorEventRefType(*(m_sensorEvents[key]));
+}
+
+void SensorManager::OnStart()
+{
+    for (auto i = 0; i < m_sensorsSize; ++i)
+    {
+        if (m_sensorEvents[i]) m_sensorEvents[i]->Start();
+    }
+}
+
+void SensorManager::OnStop()
+{
+    for (auto i = 0; i < m_sensorsSize; ++i)
+    {
+        if (m_sensorEvents[i]) m_sensorEvents[i]->Stop();
+    }
+}
+
+void SensorManager::OnPause()
+{
+    for (auto i = 0; i < m_sensorsSize; ++i)
+    {
+        if (m_sensorEvents[i]) m_sensorEvents[i]->Pause();
+    }
+}
+
+void SensorManager::OnResume()
+{
+    for (auto i = 0; i < m_sensorsSize; ++i)
+    {
+        if (m_sensorEvents[i]) m_sensorEvents[i]->Resume();
+    }
 }
 
 SensorManager::ValueType& SensorManager::operator[](const KeyType & key)

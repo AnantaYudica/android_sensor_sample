@@ -6,6 +6,7 @@
 #define ANDROID_SENSOR_SAMPLE_SENSORMANAGER_H
 
 #include "Sensor.h"
+#include "SensorEvent.h"
 
 #include <android/Sensor.h>
 #include <vector>
@@ -18,6 +19,7 @@ public:
     typedef size_t KeyType;
     typedef Sensor ValueType;
     typedef std::reference_wrapper<Sensor> ValueRefType;
+    typedef std::reference_wrapper<SensorEvent> SensorEventRefType;
 private:
     typedef ASensorManager* (GetInstanceForPackageType)(const char *);
 private:
@@ -36,6 +38,7 @@ public:
     static void Close();
 private:
     Sensor ** m_sensors;
+    SensorEvent ** m_sensorEvents;
     ASensorManager * m_sensorManager;
     size_t m_sensorsSize;
 private:
@@ -50,6 +53,14 @@ public:
     size_t Size() const;
     std::pair<KeyType, ValueRefType> FindOne(const int & type);
     std::vector<std::pair<KeyType, ValueRefType>> Find(const int & type);
+public:
+    SensorEventRefType GetSensorEvent(const KeyType & key);
+    SensorEventRefType GetSensorEvent(const KeyType & key, const int & delay);
+public:
+    void OnStart();
+    void OnStop();
+    void OnPause();
+    void OnResume();
 public:
     ValueType& operator[](const KeyType & key);
     const ValueType& operator[](const KeyType & key) const;
