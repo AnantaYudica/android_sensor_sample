@@ -10,6 +10,7 @@ add_library(Android SHARED
 add_library(Information SHARED ../src/main/cpp/Information.cpp)
 
 add_library(Sensor SHARED
+        ../src/main/cpp/SensorEvent.cpp
         ../src/main/cpp/Sensor.cpp
         ../src/main/cpp/SensorManager.cpp)
 
