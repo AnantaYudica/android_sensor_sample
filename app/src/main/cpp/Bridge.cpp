@@ -28,6 +28,7 @@ jint Java_com_example_android_1sensor_1sample_Native_onStart(
     jobject pThis)
 {
     LOG_DEBUG("native", "onStart()");
+    SensorManager::GetInstance().OnStart();
     return 1;
 }
 
@@ -37,6 +38,7 @@ jint Java_com_example_android_1sensor_1sample_Native_onResume(
         jobject pThis)
 {
     LOG_DEBUG("native", "onResume()");
+    SensorManager::GetInstance().OnResume();
     return 1;
 }
 
@@ -46,6 +48,7 @@ jint Java_com_example_android_1sensor_1sample_Native_onPause(
         jobject pThis)
 {
     LOG_DEBUG("native", "onPause()");
+    SensorManager::GetInstance().OnPause();
     return 1;
 }
 
@@ -55,6 +58,7 @@ jint Java_com_example_android_1sensor_1sample_Native_onStop(
         jobject pThis)
 {
     LOG_DEBUG("native", "onStop()");
+    SensorManager::GetInstance().OnStop();
     return 1;
 }
 
