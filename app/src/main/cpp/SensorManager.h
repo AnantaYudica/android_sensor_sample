@@ -36,10 +36,12 @@ public:
     static void Close();
 private:
     Sensor ** m_sensors;
+    ASensorManager * m_sensorManager;
     size_t m_sensorsSize;
 private:
     void Init();
-    bool InitSensor(const size_t & size);
+    bool InitSensorManager();
+    bool InitSensors();
 private:
     SensorManager();
 public:

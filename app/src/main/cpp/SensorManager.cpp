@@ -76,30 +76,37 @@ void SensorManager::Close()
 void SensorManager::Init()
 {
     LOG_DEBUG("SensorManger", "SensorManager::Init(...)");
-    auto a_sensor_manager = __GetAndroidInstance();
-    if (!a_sensor_manager) return;
-    const auto size = ASensorManager_getSensorList(a_sensor_manager, nullptr);
-    if (!InitSensor(size)) return;
+    if (!InitSensorManager()) return;
+    InitSensors();
+}
+
+bool SensorManager::InitSensorManager()
+{
+    LOG_DEBUG("SensorManger", "SensorManager::InitSensorManager(...)");
+    m_sensorManager = __GetAndroidInstance();
+    return m_sensorManager != nullptr;
+}
+
+bool SensorManager::InitSensors()
+{
+    LOG_DEBUG("SensorManger", "SensorManager::InitSensors(...)");
+    const auto size = ASensorManager_getSensorList(m_sensorManager, nullptr);
+    if (size == 0) return false;
+    m_sensorsSize = size;
+    m_sensors = new Sensor*[size];
     ASensorList a_sensor_list = new ASensor*[size];
-    ASensorManager_getSensorList(a_sensor_manager, &a_sensor_list);
+    ASensorManager_getSensorList(m_sensorManager, &a_sensor_list);
     for (auto i = 0; i < size; ++i)
     {
         m_sensors[i] = new Sensor(a_sensor_list[i]);
     }
     delete[] a_sensor_list;
-}
-
-bool SensorManager::InitSensor(const size_t & size)
-{
-    LOG_DEBUG("SensorManger", "SensorManager::InitSensor(...)");
-    if (m_sensors || size == 0) return false;
-    m_sensorsSize = size;
-    m_sensors = new Sensor*[size];
     return true;
 }
 
 SensorManager::SensorManager() :
     m_sensors(nullptr),
+    m_sensorManager(nullptr),
     m_sensorsSize(0)
 {
     LOG_DEBUG("SensorManger", "Constructor(...)");
