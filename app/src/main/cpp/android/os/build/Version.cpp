@@ -141,7 +141,7 @@ void android::os::build::Version::InitCodename()
             ms_codename_cstr, "Ljava/lang/String;");
     __SetValueFromStaticField(m_codename, m_codenameSize, m_env, &m_class,
             &codenameFieldID);
-    LOG_DEBUG("android::os::build::Version", "codename : %s, size : %d",
+    LOG_DEBUG("android::os::build::Version", "codename : %s, size : %zu",
             m_codename, m_codenameSize);
 }
 
@@ -152,7 +152,7 @@ void android::os::build::Version::InitIncremental()
             ms_incremental_cstr, "Ljava/lang/String;");
     __SetValueFromStaticField(m_incremental, m_incrementalSize, m_env, &m_class,
             &incrementFieldID);
-    LOG_DEBUG("android::os::build::Version", "incremental : %s, size : %d",
+    LOG_DEBUG("android::os::build::Version", "incremental : %s, size : %zu",
             m_incremental, m_incrementalSize);
 }
 
@@ -163,7 +163,7 @@ void android::os::build::Version::InitRelease()
             ms_release_cstr, "Ljava/lang/String;");
     __SetValueFromStaticField(m_release, m_releaseSize, m_env, &m_class,
             &releaseFieldID);
-    LOG_DEBUG("android::os::build::Version", "release : %s, size : %d",
+    LOG_DEBUG("android::os::build::Version", "release : %s, size : %zu",
               m_release, m_releaseSize);
 }
 
