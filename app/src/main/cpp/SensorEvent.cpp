@@ -19,6 +19,7 @@ constexpr const int SensorEvent::ERROR_DISABLE_SENSOR;
 constexpr const int SensorEvent::ERROR_SET_EVENT_RATE;
 constexpr const int SensorEvent::ERROR_HAS_EVENTS;
 constexpr const int SensorEvent::ERROR_GET_EVENTS;
+constexpr const int SensorEvent::ERROR_CALLBACK;
 
 SensorEvent::SensorEvent(ASensorManager * pSensorManager, Sensor * pSensor) :
     m_delay(-1),
@@ -264,7 +265,11 @@ void SensorEvent::Run()
             __SetError<void>(this, m_error, ERROR_GET_EVENTS);
             continue;
         }
-
+        if (m_sensor->Callback(sensor_event::Default(events, m_queueSize), (size_t)size) < 0)
+        {
+            __SetError<void>(this, m_error, ERROR_CALLBACK);
+            continue;
+        }
     }
     SetStop();
     if (IsEnable()) InitDisable();

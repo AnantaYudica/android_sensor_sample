@@ -35,6 +35,7 @@ public:
     static constexpr const int ERROR_SET_EVENT_RATE = 0x08;
     static constexpr const int ERROR_HAS_EVENTS = 0x09;
     static constexpr const int ERROR_GET_EVENTS = 0x0A;
+    static constexpr const int ERROR_CALLBACK = 0x0B;
 private:
     template<typename TRet>
     static typename std::enable_if<std::is_same<TRet, void>::value, TRet>::type
