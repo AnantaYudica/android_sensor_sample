@@ -13,7 +13,8 @@ add_library(Sensor SHARED
         ../src/main/cpp/SensorEvent.cpp
         ../src/main/cpp/Sensor.cpp
         ../src/main/cpp/SensorManager.cpp
-        ../src/main/cpp/sensor_event/Default.cpp)
+        ../src/main/cpp/sensor_event/Default.cpp
+        ../src/main/cpp/sensor/Default.cpp)
 
 find_library(Loglib log)
 
