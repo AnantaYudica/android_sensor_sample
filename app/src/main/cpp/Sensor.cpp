@@ -137,7 +137,6 @@ const char * Sensor::Name() const
     return m_name.get();
 }
 
-
 const char * Sensor::Vendor() const
 {
     return m_vendor.get();

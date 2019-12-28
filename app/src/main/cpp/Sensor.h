@@ -5,6 +5,8 @@
 #ifndef ANDROID_SENSOR_SAMPLE_SENSOR_H
 #define ANDROID_SENSOR_SAMPLE_SENSOR_H
 
+#include "sensor_event/Default.h"
+
 #include <android/Sensor.h>
 
 #include <memory>
@@ -27,7 +29,7 @@ public:
     Sensor(const Sensor & cpy);
     Sensor(Sensor && mov);
 public:
-    ~Sensor();
+     virtual ~Sensor();
 private:
     void Init(ASensor const* ptr);
     void InitType(ASensor const* ptr);
@@ -35,6 +37,8 @@ private:
     void InitResolution(ASensor const* ptr);
     void InitName(ASensor const* ptr);
     void InitVendor(ASensor const* ptr);
+public:
+    virtual int Callback(sensor_event::Default events, std::size_t size) = 0;
 public:
     Sensor & operator=(const Sensor &) = delete;
     Sensor & operator=(Sensor &&) = delete;
