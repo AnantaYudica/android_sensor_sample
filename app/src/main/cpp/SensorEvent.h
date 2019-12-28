@@ -45,6 +45,7 @@ private:
 private:
     int m_delay;
     int m_error;
+    size_t m_queueSize;
     std::atomic<std::int8_t> m_flag;
     ASensorManager * m_sensormanager;
     Sensor * m_sensor;
@@ -56,6 +57,10 @@ public:
     SensorEvent(ASensorManager * pSensorManager, Sensor * pSensor);
     SensorEvent(ASensorManager * pSensorManager, Sensor * pSensor,
             const int& delay);
+    SensorEvent(const size_t & queue_size, ASensorManager * pSensorManager,
+            Sensor * pSensor);
+    SensorEvent(const size_t & queue_size, ASensorManager * pSensorManager,
+            Sensor * pSensor, const int& delay);
     ~SensorEvent();
 public:
     SensorEvent(const SensorEvent &) = delete;

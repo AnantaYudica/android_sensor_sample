@@ -23,6 +23,7 @@ SensorEvent::SensorEvent(ASensorManager * pSensorManager, Sensor * pSensor) :
     m_delay(-1),
     m_error(OK),
     m_flag(0),
+    m_queueSize(10),
     m_sensormanager(pSensorManager),
     m_sensor(pSensor),
     m_eventQueue(nullptr),
@@ -39,6 +40,41 @@ SensorEvent::SensorEvent(ASensorManager * pSensorManager, Sensor * pSensor,
         m_delay(-1),
         m_error(OK),
         m_flag(0),
+        m_queueSize(10),
+        m_sensormanager(pSensorManager),
+        m_sensor(pSensor),
+        m_eventQueue(nullptr),
+        m_looper(nullptr),
+        m_thread(nullptr),
+        m_data(nullptr)
+{
+    LOG_DEBUG("SensorEvent", "Constructor(...)");
+    Init(delay);
+}
+
+SensorEvent::SensorEvent(const size_t & queue_size, ASensorManager * pSensorManager,
+    Sensor * pSensor) :
+        m_delay(-1),
+        m_error(OK),
+        m_flag(0),
+        m_queueSize(queue_size == 0 ? 1 : queue_size),
+        m_sensormanager(pSensorManager),
+        m_sensor(pSensor),
+        m_eventQueue(nullptr),
+        m_looper(nullptr),
+        m_thread(nullptr),
+        m_data(nullptr)
+{
+    LOG_DEBUG("SensorEvent", "Constructor(...)");
+    Init();
+}
+
+SensorEvent::SensorEvent(const size_t & queue_size, ASensorManager * pSensorManager,
+    Sensor * pSensor, const int& delay) :
+        m_delay(-1),
+        m_error(OK),
+        m_flag(0),
+        m_queueSize(queue_size == 0 ? 1 : queue_size),
         m_sensormanager(pSensorManager),
         m_sensor(pSensor),
         m_eventQueue(nullptr),
@@ -56,6 +92,7 @@ SensorEvent::~SensorEvent()
     Stop();
     m_error = OK;
     m_delay = -1;
+    m_queueSize = 0;
     m_flag.store(0, std::memory_order_relaxed);
     m_sensormanager = nullptr;
     m_sensor = nullptr;
@@ -195,7 +232,7 @@ void SensorEvent::Run()
     if (!InitLooper()) return;
     if (!IsEnable() && IsPrepareEnable())
         InitEnable();
-    ASensorEvent * events = new ASensorEvent[10];
+    ASensorEvent * events = new ASensorEvent[m_queueSize];
     SetStart();
     while(!IsError() && !IsRun())
     {
