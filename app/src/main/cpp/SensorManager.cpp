@@ -4,6 +4,7 @@
 
 #include "SensorManager.h"
 #include "Sensor.h"
+#include "sensor/Default.h"
 #include "android/os/build/Version.h"
 #include "Log.h"
 
@@ -99,7 +100,7 @@ bool SensorManager::InitSensors()
     ASensorManager_getSensorList(m_sensorManager, &a_sensor_list);
     for (auto i = 0; i < size; ++i)
     {
-        m_sensors[i] = new Sensor(a_sensor_list[i]);
+        m_sensors[i] = new sensor::Default(a_sensor_list[i]);
         m_sensorEvents[i] = nullptr;
     }
     delete[] a_sensor_list;
@@ -137,7 +138,7 @@ size_t SensorManager::Size() const
 std::pair<SensorManager::KeyType, SensorManager::ValueRefType>
 SensorManager::FindOne(const int & type)
 {
-    static Sensor empty{nullptr};
+    static sensor::Default empty{nullptr};
     for (auto i = 0; i < m_sensorsSize; ++i)
     {
         if (m_sensors[i]->Type() == type)
