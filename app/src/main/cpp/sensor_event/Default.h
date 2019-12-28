@@ -13,7 +13,7 @@ namespace sensor_event
 
 class Default
 {
-private:
+protected:
     std::shared_ptr<ASensorEvent> m_sensorEvents;
     size_t  m_size;
 public:
