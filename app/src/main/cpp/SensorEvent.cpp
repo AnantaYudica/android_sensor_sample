@@ -6,6 +6,7 @@
 #include "Log.h"
 
 #include <chrono>
+#include <memory>
 
 constexpr const int SensorEvent::OK;
 constexpr const int SensorEvent::ERROR_NO_SENSOR;
@@ -232,7 +233,8 @@ void SensorEvent::Run()
     if (!InitLooper()) return;
     if (!IsEnable() && IsPrepareEnable())
         InitEnable();
-    ASensorEvent * events = new ASensorEvent[m_queueSize];
+    std::shared_ptr<ASensorEvent> events{new ASensorEvent[m_queueSize],
+            std::default_delete<ASensorEvent[]>{}};
     SetStart();
     while(!IsError() && !IsRun())
     {
@@ -256,7 +258,7 @@ void SensorEvent::Run()
             continue;
         }
         else if (has_events == 0) continue;
-        const auto size = ASensorEventQueue_getEvents(m_eventQueue, events, 10);
+        const auto size = ASensorEventQueue_getEvents(m_eventQueue, events.get(), 10);
         if (size < 0)
         {
             __SetError<void>(this, m_error, ERROR_GET_EVENTS);
@@ -265,7 +267,6 @@ void SensorEvent::Run()
 
     }
     SetStop();
-    delete[] events;
     if (IsEnable()) InitDisable();
     ReleaseLooper();
 }
