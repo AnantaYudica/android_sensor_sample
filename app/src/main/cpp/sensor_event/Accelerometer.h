@@ -23,9 +23,13 @@ public:
 public:
     Accelerometer(const Accelerometer & cpy);
     Accelerometer(Accelerometer && mov);
+    Accelerometer(const Default & cpy);
+    Accelerometer(Default && mov);
 public:
     Accelerometer & operator=(const Accelerometer & cpy);
     Accelerometer & operator=(Accelerometer && mov);
+    Accelerometer & operator=(const Default & cpy);
+    Accelerometer & operator=(Default && mov);
 public:
     const float & X(const size_t & i = 0) const;
     const float & Y(const size_t & i = 0) const;

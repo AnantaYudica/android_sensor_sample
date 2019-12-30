@@ -29,6 +29,14 @@ Accelerometer::Accelerometer(Accelerometer && mov) :
     Default(std::move(mov))
 {}
 
+Accelerometer::Accelerometer(const Default & cpy) :
+    Default(cpy)
+{}
+
+Accelerometer::Accelerometer(Default && mov) :
+    Default(std::move(mov))
+{}
+
 Accelerometer & Accelerometer::operator=(const Accelerometer & cpy)
 {
     Default::operator=(cpy);
@@ -36,6 +44,18 @@ Accelerometer & Accelerometer::operator=(const Accelerometer & cpy)
 }
 
 Accelerometer & Accelerometer::operator=(Accelerometer && mov)
+{
+    Default::operator=(std::move(mov));
+    return *this;
+}
+
+Accelerometer & Accelerometer::operator=(const Default & cpy)
+{
+    Default::operator=(cpy);
+    return *this;
+}
+
+Accelerometer & Accelerometer::operator=(Default && mov)
 {
     Default::operator=(std::move(mov));
     return *this;
