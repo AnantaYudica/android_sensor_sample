@@ -33,6 +33,7 @@ private:
 public:
     static SensorManager & CreateInstance();
     static SensorManager & GetInstance();
+    static bool HasInstance();
     static void DestroyInstance();
     static void Open();
     static void Close();

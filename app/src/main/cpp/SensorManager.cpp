@@ -43,6 +43,11 @@ SensorManager & SensorManager::GetInstance()
     return *ms_instance;
 }
 
+bool SensorManager::HasInstance()
+{
+    return ms_instance != nullptr;
+}
+
 void SensorManager::DestroyInstance()
 {
     LOG_DEBUG("SensorManger", "SensorManager::DestroyInstance(...)");
