@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">android_sensor_sample</string>
+    <string name="number_dialog_title_name">TITLE_NUMBER_DIALOG</string>
+    <string name="number_dialog_value_name">VALUE_NAME</string>
+    <string name="number_dialog_unit_name">UNIT_NAME</string>
+    <string name="number_dialog_btn_update_name">UPDATE</string>
+    <string name="number_dialog_btn_cancel_name">CANCEL</string>
+    <string name="delay">Delay</string>
+    <string name="colon">:</string>>
+    <string name="microseconds">µs</string>
+    <string name="miliseconds">ms</string>
+    <string name="accelerometer">Accelerometer</string>
+    <string name="accelerometer_x">x</string>
+    <string name="accelerometer_y">y</string>
+    <string name="accelerometer_z">z</string>
 </resources>
