@@ -16,6 +16,14 @@
     <string name="sensor_details_name_value">EMPTY_NAME_VALUE</string>
     <string name="sensor_details_vendor_name">Vendor</string>
     <string name="sensor_details_vendor_value">EMPTY_VENDOR_VALUE</string>
+    <string name="sensor_event_delay_name">Delay</string>
+    <string name="sensor_event_delay_value">EMPTY_DELAY_VALUE</string>
+    <string name="sensor_event_delay_unit_name">UNIT_NAME</string>
+    <string name="sensor_event_delay_update_name">Update</string>
+    <string name="sensor_type_name">SENSOR_TYPE_NAME</string>
+    <string name="sensor_detail_name">Details :</string>
+    <string name="sensor_output_name">Output :</string>
+    <string name="sensor_event_name">Event :</string>
     <string name="empty">EMPTY</string>
     <string name="update">Update</string>
     <string name="detail">Details</string>
