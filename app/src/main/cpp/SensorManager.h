@@ -20,6 +20,8 @@ public:
     typedef Sensor ValueType;
     typedef std::reference_wrapper<Sensor> ValueRefType;
     typedef std::reference_wrapper<SensorEvent> SensorEventRefType;
+    typedef std::pair<KeyType, ValueRefType> PairValueType;
+    typedef std::vector<PairValueType> ListPairValueType;
 private:
     typedef ASensorManager* (GetInstanceForPackageType)(const char *);
 private:
@@ -52,8 +54,8 @@ public:
     ~SensorManager();
 public:
     size_t Size() const;
-    std::pair<KeyType, ValueRefType> FindOne(const int & type);
-    std::vector<std::pair<KeyType, ValueRefType>> Find(const int & type);
+    PairValueType FindOne(const int & type);
+    ListPairValueType Find(const int & type);
 public:
     SensorEventRefType GetSensorEvent(const KeyType & key);
     SensorEventRefType GetSensorEvent(const KeyType & key, const int & delay);

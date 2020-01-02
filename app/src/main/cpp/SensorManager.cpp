@@ -140,7 +140,7 @@ size_t SensorManager::Size() const
     return m_sensorsSize;
 }
 
-std::pair<SensorManager::KeyType, SensorManager::ValueRefType>
+typename SensorManager::PairValueType
 SensorManager::FindOne(const int & type)
 {
     static sensor::Default empty{nullptr};
@@ -152,10 +152,10 @@ SensorManager::FindOne(const int & type)
     return {size_t(-1), ValueRefType{empty}};
 }
 
-std::vector<std::pair<SensorManager::KeyType, SensorManager::ValueRefType>>
+typename SensorManager::ListPairValueType
 SensorManager::Find(const int & type)
 {
-    std::vector<std::pair<KeyType, ValueRefType>> res;
+    ListPairValueType res;
     for (auto i = 0; i < m_sensorsSize; ++i)
     {
         if (m_sensors[i]->Type() == type)
