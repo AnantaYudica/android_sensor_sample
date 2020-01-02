@@ -9,8 +9,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 
-class NumberDialog(private var ctx : Context,
-                   var onUpdateCallback: ((Int)->Unit)? = null) :
+class NumberDialog<T>(private var ctx : Context,
+                      private var onUpdateCallback : ((T)->Int),
+                      private var onCastFromString : ((String)->T),
+                      private var onCastToString : ((T)->String)) :
     DialogInterface.OnCancelListener,
     AppCompatDialog(ctx, true, null)
 {
@@ -24,11 +26,11 @@ class NumberDialog(private var ctx : Context,
         setOnCancelListener(this)
         setContentView(R.layout.number_dialog)
         setTitle(R.string.number_dialog_title_name)
-        value_name = findViewById<TextView>(R.id.value_name)
-        value_update = findViewById<EditText>(R.id.value_update)
-        unit_name = findViewById<TextView>(R.id.unit_name)
-        cancel_btn = findViewById<Button>(R.id.cancel_btn)
-        update_btn = findViewById<Button>(R.id.update_btn)
+        value_name = findViewById(R.id.value_name)
+        value_update = findViewById(R.id.value_update)
+        unit_name = findViewById(R.id.unit_name)
+        cancel_btn = findViewById(R.id.cancel_btn)
+        update_btn = findViewById(R.id.update_btn)
         cancel_btn?.setOnClickListener(::onCancel)
         update_btn?.setOnClickListener(::onUpdate)
 
@@ -45,7 +47,7 @@ class NumberDialog(private var ctx : Context,
 
     private fun onUpdate(v : View)
     {
-        onUpdateCallback?.invoke(value_update?.text.toString().toInt())
+        onUpdateCallback.invoke(onCastFromString(value_update?.text.toString()))
         dismiss()
     }
 
@@ -63,9 +65,9 @@ class NumberDialog(private var ctx : Context,
         value_name?.text = value
     }
 
-    fun setValue(value : Int)
+    fun setValue(value : T)
     {
-        value_update?.setText("" + value.toString())
+        value_update?.setText(onCastToString(value))
     }
 
     fun setUnitName(value : String)
