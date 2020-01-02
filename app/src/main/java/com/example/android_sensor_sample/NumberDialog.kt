@@ -53,32 +53,32 @@ class NumberDialog(private var ctx : Context,
         super.onCreate(savedInstanceState)
     }
 
-    fun SetTitleName(value: String)
+    fun setTitleName(value: String)
     {
         setTitle(value)
     }
 
-    fun SetValueName(value : String)
+    fun setValueName(value : String)
     {
         value_name?.text = value
     }
 
-    fun SetValue(value : Int)
+    fun setValue(value : Int)
     {
         value_update?.setText("" + value.toString())
     }
 
-    fun SetUnitName(value : String)
+    fun setUnitName(value : String)
     {
         unit_name?.text = value
     }
 
-    fun SetButtonCancelName(value : String)
+    fun setButtonCancelName(value : String)
     {
         cancel_btn?.text = value
     }
 
-    fun SetButtonUpdateName(value : String)
+    fun setButtonUpdateName(value : String)
     {
         update_btn?.text = value
     }
