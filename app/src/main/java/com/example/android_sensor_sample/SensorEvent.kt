@@ -31,15 +31,20 @@ class SensorEvent(private var id : Int,
         delayNumberDialog = NumberDialog(
             ctx, ::delayUpdateCallback,
             ::delayCastFromStringCallback, ::delayToStringCallback)
+        delayNumberDialog.setTitleName(ctx.resources.getString(R.string.delay_number_dialog_title_name))
+        delayNumberDialog.setValueName(ctx.resources.getString(R.string.sensor_event_delay_name))
+        delayNumberDialog.setUnitName(ctx.resources.getString(R.string.miliseconds))
         delay_update_btn.setOnClickListener(::delayUpdateOnClick)
         pause_btn.setOnClickListener(::pauseOnClick)
         play_btn.setOnClickListener(::playOnClick)
         stop_btn.setOnClickListener(::stopOnClick)
+        SensorManager.getInstance().delay(id, SensorManager.getInstance().minDelay(id))
         update()
         parent.addView(sensor_event_layout)
     }
     private fun delayUpdateOnClick(v: View)
     {
+        delayNumberDialog.setValue(delay())
         delayNumberDialog.show()
     }
     private fun pauseOnClick(v: View)
