@@ -39,7 +39,6 @@ class SensorEvent(private var id : Int,
         play_btn.setOnClickListener(::playOnClick)
         stop_btn.setOnClickListener(::stopOnClick)
         SensorManager.getInstance().delay(id, SensorManager.getInstance().minDelay(id))
-        update()
         parent.addView(sensor_event_layout)
     }
     private fun delayUpdateOnClick(v: View)
