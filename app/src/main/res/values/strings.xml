@@ -24,6 +24,7 @@
     <string name="sensor_detail_name">Details :</string>
     <string name="sensor_output_name">Output :</string>
     <string name="sensor_event_name">Event :</string>
+    <string name="delay_number_dialog_title_name">Update Delay</string>
     <string name="empty">EMPTY</string>
     <string name="update">Update</string>
     <string name="detail">Details</string>
