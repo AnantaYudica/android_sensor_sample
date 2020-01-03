@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 
 class SensorEvent(private var id : Int,
@@ -14,9 +15,9 @@ class SensorEvent(private var id : Int,
     private var delay_value: TextView
     private var delay_unit_name: TextView
     private var delay_update_btn: Button
-    private var pause_btn: Button
-    private var play_btn: Button
-    private var stop_btn: Button
+    private var pause_btn: ImageButton
+    private var play_btn: ImageButton
+    private var stop_btn: ImageButton
     private var delayNumberDialog: NumberDialog<Float>
 
     init {
