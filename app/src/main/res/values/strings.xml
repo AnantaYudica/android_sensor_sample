@@ -25,6 +25,7 @@
     <string name="sensor_output_name">Output :</string>
     <string name="sensor_event_name">Event :</string>
     <string name="delay_number_dialog_title_name">Update Delay</string>
+    <string name="sensor_accelerometer_name">Accelerometer</string>
     <string name="empty">EMPTY</string>
     <string name="update">Update</string>
     <string name="detail">Details</string>
@@ -32,8 +33,17 @@
     <string name="colon">:</string>>
     <string name="microseconds">µs</string>
     <string name="miliseconds">ms</string>
+    <string name="acceleration_unit_name">ms⁻²</string>
     <string name="accelerometer">Accelerometer</string>
-    <string name="accelerometer_x">x</string>
-    <string name="accelerometer_y">y</string>
-    <string name="accelerometer_z">z</string>
+    <string name="accelerometer_x_name">x</string>
+    <string name="accelerometer_x_value">EMPTY_X_VALUE</string>
+    <string name="accelerometer_x_unit_name">X_UNIT_NAME</string>
+    <string name="accelerometer_y_name">y</string>
+    <string name="accelerometer_y_value">EMPTY_Y_VALUE</string>
+    <string name="accelerometer_y_unit_name">Y_UNIT_NAME</string>
+    <string name="accelerometer_z_name">z</string>
+    <string name="accelerometer_z_value">EMPTY_Z_VALUE</string>
+    <string name="accelerometer_z_unit_name">Z_UNIT_NAME</string>
+    <string name="accelerometer_timestamp_name">Timestamp</string>
+    <string name="accelerometer_timestamp_value">EMPTY_TIMESTAMP_VALUE</string>
 </resources>
