@@ -5,6 +5,7 @@
 #ifndef ANDROID_SENSOR_SAMPLE_SENSOR_H
 #define ANDROID_SENSOR_SAMPLE_SENSOR_H
 
+#include "Definition.h"
 #include "sensor_event/Default.h"
 
 #include <android/Sensor.h>
@@ -15,28 +16,28 @@ class Sensor
 {
 private:
     static void __SetValueSharedString(std::shared_ptr<char> & val, const char * cstr,
-            const size_t & size);
+        const size_t & size);
 private:
     int m_type;
     int m_minDelay;
     float m_resolution;
     std::shared_ptr<char> m_name;
     std::shared_ptr<char> m_vendor;
-    ASensor const* m_ptr;
+    InfSensorType m_inf;
 public:
-    Sensor(ASensor const* ptr);
+    Sensor(InfSensorType inf);
 public:
     Sensor(const Sensor & cpy);
     Sensor(Sensor && mov);
 public:
      virtual ~Sensor();
 private:
-    void Init(ASensor const* ptr);
-    void InitType(ASensor const* ptr);
-    void InitMinDelay(ASensor const* ptr);
-    void InitResolution(ASensor const* ptr);
-    void InitName(ASensor const* ptr);
-    void InitVendor(ASensor const* ptr);
+    void Init(InfSensorType inf);
+    void InitType(InfSensorType inf);
+    void InitMinDelay(InfSensorType inf);
+    void InitResolution(InfSensorType inf);
+    void InitName(InfSensorType inf);
+    void InitVendor(InfSensorType inf);
 public:
     virtual int Callback(sensor_event::Default events, std::size_t size) = 0;
 public:
@@ -48,7 +49,7 @@ public:
     float Resolution() const;
     const char * Name() const;
     const char * Vendor() const;
-    ASensor const* Pointer();
+    InfSensorType Interface();
 public:
     operator bool() const;
     bool operator==(const Sensor & sensor) const;
