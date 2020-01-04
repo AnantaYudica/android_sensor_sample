@@ -48,19 +48,19 @@ private:
     int m_error;
     size_t m_queueSize;
     std::atomic<std::int8_t> m_flag;
-    ASensorManager * m_sensormanager;
+    InfSensorManagerType m_sensormanager;
     Sensor * m_sensor;
-    ASensorEventQueue * m_eventQueue;
-    ALooper * m_looper;
+    InfSensorEventQueueType m_eventQueue;
+    InfLooperType m_looper;
     std::thread * m_thread;
     void * m_data;
 public:
-    SensorEvent(ASensorManager * pSensorManager, Sensor * pSensor);
-    SensorEvent(ASensorManager * pSensorManager, Sensor * pSensor,
+    SensorEvent(InfSensorManagerType infSensorManager, Sensor * pSensor);
+    SensorEvent(InfSensorManagerType infSensorManager, Sensor * pSensor,
             const int& delay);
-    SensorEvent(const size_t & queue_size, ASensorManager * pSensorManager,
+    SensorEvent(const size_t & queue_size, InfSensorManagerType infSensorManager,
             Sensor * pSensor);
-    SensorEvent(const size_t & queue_size, ASensorManager * pSensorManager,
+    SensorEvent(const size_t & queue_size, InfSensorManagerType infSensorManager,
             Sensor * pSensor, const int& delay);
     ~SensorEvent();
 public:

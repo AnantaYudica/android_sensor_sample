@@ -21,12 +21,12 @@ constexpr const int SensorEvent::ERROR_HAS_EVENTS;
 constexpr const int SensorEvent::ERROR_GET_EVENTS;
 constexpr const int SensorEvent::ERROR_CALLBACK;
 
-SensorEvent::SensorEvent(ASensorManager * pSensorManager, Sensor * pSensor) :
+SensorEvent::SensorEvent(InfSensorManagerType infSensorManager, Sensor * pSensor) :
     m_delay(-1),
     m_error(OK),
     m_flag(0),
     m_queueSize(10),
-    m_sensormanager(pSensorManager),
+    m_sensormanager(infSensorManager),
     m_sensor(pSensor),
     m_eventQueue(nullptr),
     m_looper(nullptr),
@@ -37,13 +37,13 @@ SensorEvent::SensorEvent(ASensorManager * pSensorManager, Sensor * pSensor) :
     Init();
 }
 
-SensorEvent::SensorEvent(ASensorManager * pSensorManager, Sensor * pSensor,
+SensorEvent::SensorEvent(InfSensorManagerType infSensorManager, Sensor * pSensor,
     const int& delay) :
         m_delay(-1),
         m_error(OK),
         m_flag(0),
         m_queueSize(10),
-        m_sensormanager(pSensorManager),
+        m_sensormanager(infSensorManager),
         m_sensor(pSensor),
         m_eventQueue(nullptr),
         m_looper(nullptr),
@@ -54,13 +54,13 @@ SensorEvent::SensorEvent(ASensorManager * pSensorManager, Sensor * pSensor,
     Init(delay);
 }
 
-SensorEvent::SensorEvent(const size_t & queue_size, ASensorManager * pSensorManager,
+SensorEvent::SensorEvent(const size_t & queue_size, InfSensorManagerType infSensorManager,
     Sensor * pSensor) :
         m_delay(-1),
         m_error(OK),
         m_flag(0),
         m_queueSize(queue_size == 0 ? 1 : queue_size),
-        m_sensormanager(pSensorManager),
+        m_sensormanager(infSensorManager),
         m_sensor(pSensor),
         m_eventQueue(nullptr),
         m_looper(nullptr),
@@ -71,13 +71,13 @@ SensorEvent::SensorEvent(const size_t & queue_size, ASensorManager * pSensorMana
     Init();
 }
 
-SensorEvent::SensorEvent(const size_t & queue_size, ASensorManager * pSensorManager,
+SensorEvent::SensorEvent(const size_t & queue_size, InfSensorManagerType infSensorManager,
     Sensor * pSensor, const int& delay) :
         m_delay(-1),
         m_error(OK),
         m_flag(0),
         m_queueSize(queue_size == 0 ? 1 : queue_size),
-        m_sensormanager(pSensorManager),
+        m_sensormanager(infSensorManager),
         m_sensor(pSensor),
         m_eventQueue(nullptr),
         m_looper(nullptr),
@@ -133,8 +133,8 @@ int SensorEvent::InitLooper()
 int SensorEvent::InitEventQueue()
 {
     LOG_DEBUG("SensorEvent", "InitEventQueue(...)");
-    m_eventQueue = ASensorManager_createEventQueue(m_sensormanager, m_looper,
-            0, nullptr, m_data);
+    sensor::manager::CreateEventQueue(m_sensormanager, m_looper,
+            0, nullptr, m_data, m_eventQueue);
     LOG_DEBUG("SensorEvent", "eventQueue : %p", (void*)m_eventQueue);
     if (!m_eventQueue)
         return __SetError<int>(this, m_error, ERROR_CREATE_EVENTQUEUE, -1);
@@ -144,7 +144,8 @@ int SensorEvent::InitEventQueue()
 int SensorEvent::InitEnableSensor()
 {
     LOG_DEBUG("SensorEvent", "InitEnableSensor(...)");
-    if (ASensorEventQueue_enableSensor(m_eventQueue, m_sensor->Pointer()) != 0)
+
+    if (sensor::event::queue::EnableSensor(m_eventQueue, m_sensor->Interface()) != 0)
         return __SetError<int>(this, m_error, ERROR_ENABLE_SENSOR, -1);
     return 0;
 }
@@ -152,7 +153,7 @@ int SensorEvent::InitEnableSensor()
 int SensorEvent::InitDisableSensor()
 {
     LOG_DEBUG("SensorEvent", "InitDisableSensor(...)");
-    if (ASensorEventQueue_disableSensor(m_eventQueue, m_sensor->Pointer()) != 0)
+    if (sensor::event::queue::DisableSensor(m_eventQueue, m_sensor->Interface()) != 0)
         return __SetError<int>(this, m_error, ERROR_DISABLE_SENSOR, -1);
     return 0;
 }
@@ -160,7 +161,7 @@ int SensorEvent::InitDisableSensor()
 int SensorEvent::InitEventRate()
 {
     LOG_DEBUG("SensorEvent", "InitEventRate(...)");
-    if  (ASensorEventQueue_setEventRate(m_eventQueue, m_sensor->Pointer(), m_delay) != 0)
+    if  (sensor::event::queue::SetEventRate(m_eventQueue, m_sensor->Interface(), m_delay) != 0)
         return __SetError<int>(this, m_error, ERROR_SET_EVENT_RATE, -1);
     LOG_DEBUG("SensorEvent", "set delay %d microseconds", m_delay);
     return 0;
@@ -223,7 +224,7 @@ void SensorEvent::ReleaseEventQueue()
 {
     LOG_DEBUG("SensorEvent", "ReleaseEventQueue(...)");
     if (!m_eventQueue) return;
-    ASensorManager_destroyEventQueue(m_sensormanager, m_eventQueue);
+    sensor::manager::DestroyEventQueue(m_sensormanager, m_eventQueue);
     m_eventQueue = nullptr;
     m_data = nullptr;
 }
@@ -234,8 +235,7 @@ void SensorEvent::Run()
     if (!InitLooper()) return;
     if (!IsEnable() && IsPrepareEnable())
         InitEnable();
-    std::shared_ptr<ASensorEvent> events{new ASensorEvent[m_queueSize],
-            std::default_delete<ASensorEvent[]>{}};
+    InfSensorEventType sensor_events = sensor::AllocateEvents(m_queueSize);
     SetStart();
     while(!IsError() && !IsRun())
     {
@@ -252,20 +252,22 @@ void SensorEvent::Run()
             continue;
         }
         if (!IsEnable() || !IsPrepareEnable()) continue;
-        auto has_events = ASensorEventQueue_hasEvents(m_eventQueue);
+        auto has_events = sensor::event::queue::HasEvents(m_eventQueue);
         if(has_events < 0)
         {
             __SetError<void>(this, m_error, ERROR_HAS_EVENTS);
             continue;
         }
         else if (has_events == 0) continue;
-        const auto size = ASensorEventQueue_getEvents(m_eventQueue, events.get(), 10);
+        const auto size = sensor::event::queue::GetEvents(m_eventQueue,
+                sensor_events, m_queueSize);
         if (size < 0)
         {
             __SetError<void>(this, m_error, ERROR_GET_EVENTS);
             continue;
         }
-        if (m_sensor->Callback(sensor_event::Default(events, m_queueSize), (size_t)size) < 0)
+        if (m_sensor->Callback(sensor_event::Default(sensor_events, m_queueSize),
+                (size_t)size) < 0)
         {
             __SetError<void>(this, m_error, ERROR_CALLBACK);
             continue;

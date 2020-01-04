@@ -7,7 +7,17 @@
 
 #include <android/sensor.h>
 
+#include <memory>
+
 typedef const ASensor * InfSensorType;
+
+typedef ASensorManager * InfSensorManagerType;
+
+typedef ASensorEventQueue * InfSensorEventQueueType;
+
+typedef ALooper * InfLooperType;
+
+typedef std::shared_ptr<ASensorEvent> InfSensorEventType;
 
 namespace sensor
 {
@@ -47,6 +57,12 @@ inline void GetVendor(const ASensor * & inf, const char *& out)
     *out = ASensor_getVendor(inf);
 }
 
+inline InfSensorEventType AllocateEvents(const size_t & size)
+{
+    return InfSensorEventType{new ASensorEvent[size],
+        std::default_delete<ASensorEvent[]>{}};
+}
+
 enum class Type : int
 {
     invalid =  ASENSOR_TYPE_INVALID,
@@ -77,6 +93,59 @@ enum class Type : int
     low_latency_offbody_detect = ASENSOR_TYPE_LOW_LATENCY_OFFBODY_DETECT,
     accelerometer_uncalibrated = ASENSOR_TYPE_ACCELEROMETER_UNCALIBRATED,
 };
+
+namespace manager
+{
+
+inline void CreateEventQueue(ASensorManager* manager, ALooper* looper, int ident,
+    ALooper_callbackFunc callback, void* data, ASensorEventQueue* & sensorEventQueue)
+{
+    *sensorEventQueue = ASensorManager_createEventQueue(manager, looper, ident,
+            callback, data);
+}
+
+inline int DestroyEventQueue(ASensorManager* manager, ASensorEventQueue* queue)
+{
+    return ASensorManager_destroyEventQueue(manager, queue);
+}
+
+
+} //!manager
+
+namespace event
+{
+
+namespace queue
+{
+
+inline int EnableSensor(ASensorEventQueue* queue, ASensor const* sensor)
+{
+    return ASensorEventQueue_enableSensor(queue, sensor);
+}
+
+inline int DisableSensor(ASensorEventQueue* queue, ASensor const* sensor)
+{
+    return ASensorEventQueue_disableSensor(queue, sensor);
+}
+
+inline int SetEventRate(ASensorEventQueue* queue, ASensor const* sensor, int32_t usec)
+{
+    return ASensorEventQueue_setEventRate(queue, sensor, usec);
+}
+
+inline int HasEvents(ASensorEventQueue* queue)
+{
+    return ASensorEventQueue_hasEvents(queue);
+}
+
+inline ssize_t GetEvents(ASensorEventQueue* queue, InfSensorEventType events, size_t count)
+{
+    return ASensorEventQueue_getEvents(queue, events.get(), count);
+}
+
+} //!queue
+
+} //!event
 
 } //sensor
 
