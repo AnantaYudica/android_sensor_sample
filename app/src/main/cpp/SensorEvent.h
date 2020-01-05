@@ -5,14 +5,15 @@
 #ifndef ANDROID_SENSOR_SAMPLE_SENSOREVENT_H
 #define ANDROID_SENSOR_SAMPLE_SENSOREVENT_H
 
+#include "Sensor.h"
+#include "sensor_event/Default.h"
+
 #include <android/sensor.h>
 #include <android/looper.h>
 #include <thread>
 #include <atomic>
 #include <cstdint>
 #include <type_traits>
-
-#include "Sensor.h"
 
 class SensorEvent
 {
@@ -36,6 +37,7 @@ public:
     static constexpr const int ERROR_HAS_EVENTS = 0x09;
     static constexpr const int ERROR_GET_EVENTS = 0x0A;
     static constexpr const int ERROR_CALLBACK = 0x0B;
+    static constexpr const int ERROR_MAKE_SENSOREVENT = 0x0C;
 private:
     template<typename TRet>
     static typename std::enable_if<std::is_same<TRet, void>::value, TRet>::type
@@ -51,6 +53,7 @@ private:
     InfSensorManagerType m_sensormanager;
     Sensor * m_sensor;
     InfSensorEventQueueType m_eventQueue;
+    sensor_event::Default * m_eventData;
     InfLooperType m_looper;
     std::thread * m_thread;
     void * m_data;
@@ -71,6 +74,7 @@ private:
     int InitThread();
     int InitLooper();
     int InitEventQueue();
+    int InitEventData();
     int InitEnableSensor();
     int InitDisableSensor();
     int InitEventRate();
@@ -82,6 +86,7 @@ private:
     void ReleaseThread();
     void ReleaseLooper();
     void ReleaseEventQueue();
+    void ReleaseEventData();
 private:
     void Run();
 public:
