@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.4.1)
 add_compile_options(-std=c++11)
 
 add_library(Bridge SHARED ../src/main/cpp/Bridge.cpp
-        ../src/main/cpp/jni/SensorManager.cpp)
+        ../src/main/cpp/jni/SensorManager.cpp
+        ../src/main/cpp/jni/Sensor.cpp)
 
 add_library(Android SHARED
         ../src/main/cpp/android/os/build/Version.cpp)
