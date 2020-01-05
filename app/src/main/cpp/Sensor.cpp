@@ -102,7 +102,7 @@ void Sensor::InitName(InfSensorType inf)
 {
     LOG_DEBUG("sensor", "InitName(...)");
     const char * cstr = nullptr;
-    sensor::GetName(inf, cstr);
+    sensor::GetName(inf, &cstr);
     const size_t  size = cstr ? strnlen(cstr, 1024): 0;
     __SetValueSharedString(m_name, cstr, size);
     LOG_DEBUG("sensor", "name = \"%s\"", m_name.get());
@@ -112,7 +112,7 @@ void Sensor::InitVendor(InfSensorType inf)
 {
     LOG_DEBUG("sensor", "InitVendor(...)");
     const char * cstr = nullptr;
-    sensor::GetVendor(inf, cstr);
+    sensor::GetVendor(inf, &cstr);
     const size_t  size = cstr ? strnlen(cstr, 1024): 0;
     __SetValueSharedString(m_vendor, cstr, size);
     LOG_DEBUG("sensor", "vendor = \"%s\"", m_vendor.get());
