@@ -14,22 +14,6 @@
 
 SensorManager * SensorManager::ms_instance = nullptr;
 
-void * SensorManager::ms_handle = nullptr;
-
-ASensorManager* (*SensorManager::ms_getInstanceForPackage)(const char *) = nullptr;
-
-ASensorManager * SensorManager::__GetAndroidInstance()
-{
-    static ASensorManager* (*GetInstanceFunc)(const char *) = nullptr;
-    static const char * package = "android_sensor_sample.sensormanager";
-    if (android::os::build::Version::SDK() >= 21)
-    {
-        if (ms_getInstanceForPackage)
-            return ms_getInstanceForPackage(package);
-    }
-    return ASensorManager_getInstance();
-}
-
 SensorManager & SensorManager::CreateInstance()
 {
     LOG_DEBUG("SensorManger", "SensorManager::CreateInstance(...)");
@@ -54,30 +38,6 @@ void SensorManager::DestroyInstance()
     if (ms_instance) delete ms_instance;
     ms_instance = nullptr;
 }
-void SensorManager::Open()
-{
-    LOG_DEBUG("SensorManger", "SensorManager::Open(...)");
-    if (!ms_handle)
-    {
-        ms_handle = dlopen(ms_library_cstr, RTLD_LAZY);
-        LOG_DEBUG("SensorManger", "handle : %p", ms_handle);
-
-        if (ms_handle)
-            ms_getInstanceForPackage = (GetInstanceForPackageType *) dlsym(ms_handle,
-                    "ASensorManager_getInstanceForPackage");
-
-        LOG_DEBUG("SensorManger", "ASensorManager_getInstanceForPackage : %p",
-                (void *)ms_getInstanceForPackage);
-    }
-}
-
-void SensorManager::Close()
-{
-    LOG_DEBUG("SensorManger", "SensorManager::Close(...)");
-    if (ms_handle)
-        dlclose(ms_handle);
-    ms_handle = nullptr;
-}
 
 void SensorManager::Init()
 {
@@ -89,26 +49,26 @@ void SensorManager::Init()
 bool SensorManager::InitSensorManager()
 {
     LOG_DEBUG("SensorManger", "SensorManager::InitSensorManager(...)");
-    m_sensorManager = __GetAndroidInstance();
+    m_sensorManager = sensor::manager::GetInstance("android_sensor_sample.sensormanager");
     return m_sensorManager != nullptr;
 }
 
 bool SensorManager::InitSensors()
 {
     LOG_DEBUG("SensorManger", "SensorManager::InitSensors(...)");
-    const auto size = ASensorManager_getSensorList(m_sensorManager, nullptr);
+    const auto size = sensor::manager::GetSensorList(m_sensorManager, nullptr);
     if (size == 0) return false;
     m_sensorsSize = size;
     m_sensors = new Sensor*[size];
     m_sensorEvents = new SensorEvent*[size];
-    ASensorList a_sensor_list = new ASensor*[size];
-    ASensorManager_getSensorList(m_sensorManager, &a_sensor_list);
+    InfSensorListType sensor_list = sensor::AllocateList(size);
+    sensor::manager::GetSensorList(m_sensorManager, &sensor_list);
     for (auto i = 0; i < size; ++i)
     {
-        m_sensors[i] = new sensor::Default(a_sensor_list[i]);
+        m_sensors[i] = new sensor::Default(sensor_list[i]);
         m_sensorEvents[i] = nullptr;
     }
-    delete[] a_sensor_list;
+    sensor::FreeList(sensor_list);
     return true;
 }
 

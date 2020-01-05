@@ -7,6 +7,7 @@
 
 #include "Sensor.h"
 #include "SensorEvent.h"
+#include "Definition.h"
 
 #include <android/Sensor.h>
 #include <vector>
@@ -23,26 +24,16 @@ public:
     typedef std::pair<KeyType, ValueRefType> PairValueType;
     typedef std::vector<PairValueType> ListPairValueType;
 private:
-    typedef ASensorManager* (GetInstanceForPackageType)(const char *);
-private:
-    static constexpr const char * ms_library_cstr = "libandroid.so";
-private:
     static SensorManager * ms_instance;
-    static void * ms_handle;
-    static GetInstanceForPackageType * ms_getInstanceForPackage;
-private:
-    static ASensorManager * __GetAndroidInstance();
 public:
     static SensorManager & CreateInstance();
     static SensorManager & GetInstance();
     static bool HasInstance();
     static void DestroyInstance();
-    static void Open();
-    static void Close();
 private:
     Sensor ** m_sensors;
     SensorEvent ** m_sensorEvents;
-    ASensorManager * m_sensorManager;
+    InfSensorManagerType m_sensorManager;
     size_t m_sensorsSize;
 private:
     void Init();
