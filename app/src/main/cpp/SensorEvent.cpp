@@ -134,7 +134,7 @@ int SensorEvent::InitEventQueue()
 {
     LOG_DEBUG("SensorEvent", "InitEventQueue(...)");
     sensor::manager::CreateEventQueue(m_sensormanager, m_looper,
-            0, nullptr, m_data, m_eventQueue);
+            0, nullptr, m_data, &m_eventQueue);
     LOG_DEBUG("SensorEvent", "eventQueue : %p", (void*)m_eventQueue);
     if (!m_eventQueue)
         return __SetError<int>(this, m_error, ERROR_CREATE_EVENTQUEUE, -1);
