@@ -16,7 +16,8 @@ add_library(Sensor SHARED
         ../src/main/cpp/SensorManager.cpp
         ../src/main/cpp/sensor_event/Default.cpp
         ../src/main/cpp/sensor_event/Accelerometer.cpp
-        ../src/main/cpp/sensor/Default.cpp)
+        ../src/main/cpp/sensor/Default.cpp
+        ../src/main/cpp/sensor/Accelerometer.cpp)
 
 find_library(Loglib log)
 
