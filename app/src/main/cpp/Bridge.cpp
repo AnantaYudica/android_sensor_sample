@@ -17,7 +17,6 @@ jint Java_com_example_android_1sensor_1sample_Native_onCreate(
     LOG_DEBUG("native", "onCreate()");
     Information::CreateInstance("android", pEnv);
     android::os::build::Version::Load(pEnv);
-    SensorManager::Open();
     SensorManager::CreateInstance();
     return 1;
 }
@@ -79,7 +78,6 @@ jint Java_com_example_android_1sensor_1sample_Native_onDestroy(
     LOG_DEBUG("native", "onDestroy()");
     android::os::build::Version::Reset();
     SensorManager::DestroyInstance();
-    SensorManager::Close();
     Information::DestroyInstance();
     return 1;
 }
