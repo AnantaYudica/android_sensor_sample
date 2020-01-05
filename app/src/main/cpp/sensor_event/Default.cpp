@@ -53,6 +53,12 @@ Default & Default::operator=(Default && mov)
     return *this;
 }
 
+void Default::SetEvents(std::shared_ptr<ASensorEvent> data, const size_t & size)
+{
+    m_sensorEvents = data;
+    m_size = size;
+}
+
 size_t Default::Size() const
 {
     return m_size;

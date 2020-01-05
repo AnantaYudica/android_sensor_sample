@@ -15,7 +15,7 @@ class Default
 {
 protected:
     std::shared_ptr<ASensorEvent> m_sensorEvents;
-    size_t  m_size;
+    size_t m_size;
 public:
     Default();
     Default(std::shared_ptr<ASensorEvent> sensorEvents, const size_t & size);
@@ -27,6 +27,8 @@ public:
 public:
     Default & operator=(const Default & cpy);
     Default & operator=(Default && mov);
+public:
+    void SetEvents(std::shared_ptr<ASensorEvent> data, const size_t & size);
 public:
     size_t Size() const;
 public:
