@@ -5,9 +5,12 @@
 #ifndef ANDROID_SENSOR_SAMPLE_DEFINITION_H
 #define ANDROID_SENSOR_SAMPLE_DEFINITION_H
 
+#include "android/os/build/Version.h"
+
 #include <android/sensor.h>
 
 #include <memory>
+#include <dlfcn.h>
 
 typedef const ASensor * InfSensorType;
 
@@ -19,6 +22,8 @@ typedef ALooper * InfLooperType;
 
 typedef std::shared_ptr<ASensorEvent> InfSensorEventType;
 
+typedef ASensorList InfSensorListType;
+
 namespace sensor
 {
 
@@ -27,7 +32,7 @@ inline void Reset(const ASensor * & inf)
     inf = nullptr;
 }
 
-inline bool IsDefault(const ASensor * & inf)
+inline bool IsDefault(const ASensor * const & inf)
 {
     return inf == nullptr;
 }
@@ -47,12 +52,12 @@ inline void GetResolution(const ASensor * & inf, float * out)
     *out = ASensor_getResolution(inf);
 }
 
-inline void GetName(const ASensor * & inf, const char *& out)
+inline void GetName(const ASensor * & inf, const char ** out)
 {
     *out = ASensor_getName(inf);
 }
 
-inline void GetVendor(const ASensor * & inf, const char *& out)
+inline void GetVendor(const ASensor * & inf, const char ** out)
 {
     *out = ASensor_getVendor(inf);
 }
@@ -61,6 +66,17 @@ inline InfSensorEventType AllocateEvents(const size_t & size)
 {
     return InfSensorEventType{new ASensorEvent[size],
         std::default_delete<ASensorEvent[]>{}};
+}
+
+inline ASensorList AllocateList(const size_t & size)
+{
+    if (size == 0) return nullptr;
+    return new ASensor*[size];
+}
+
+inline void FreeList(ASensorList list)
+{
+    delete[] list;
 }
 
 enum class Type : int
@@ -97,8 +113,30 @@ enum class Type : int
 namespace manager
 {
 
+struct __Library
+{
+    void * handle;
+    __Library(const char * library_name) :
+        handle(nullptr)
+    {
+        handle = dlopen(library_name, RTLD_LAZY);
+    }
+    ~__Library()
+    {
+        if (handle)
+            dlclose(handle);
+        handle = nullptr;
+    }
+    template<typename TFunction>
+    TFunction * GetFunctionPointer(const char * function_name)
+    {
+        if (!handle) return nullptr;
+        return (TFunction*) dlsym(handle, function_name);
+    }
+};
+
 inline void CreateEventQueue(ASensorManager* manager, ALooper* looper, int ident,
-    ALooper_callbackFunc callback, void* data, ASensorEventQueue* & sensorEventQueue)
+    ALooper_callbackFunc callback, void* data, ASensorEventQueue* * sensorEventQueue)
 {
     *sensorEventQueue = ASensorManager_createEventQueue(manager, looper, ident,
             callback, data);
@@ -107,6 +145,24 @@ inline void CreateEventQueue(ASensorManager* manager, ALooper* looper, int ident
 inline int DestroyEventQueue(ASensorManager* manager, ASensorEventQueue* queue)
 {
     return ASensorManager_destroyEventQueue(manager, queue);
+}
+
+inline ASensorManager* GetInstance(const char * package)
+{
+    typedef ASensorManager* (GetInstanceFuncType)(const char *);
+    static __Library lib("libandroid.so");
+    static auto function_ptr =
+        lib.GetFunctionPointer<GetInstanceFuncType>("ASensorManager_getInstanceForPackage");
+    if (android::os::build::Version::SDK() >= 21)
+    {
+        if (function_ptr) return function_ptr(package);
+    }
+    return ASensorManager_getInstance();
+}
+
+inline int GetSensorList(ASensorManager* manager, ASensorList* list)
+{
+    return ASensorManager_getSensorList(manager, list);
 }
 
 
