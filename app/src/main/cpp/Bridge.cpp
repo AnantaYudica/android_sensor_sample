@@ -4,7 +4,7 @@
 
 #include "android/os/build/Version.h"
 #include "Information.h"
-#include "SensorManager.h"
+#include "jni/SensorManager.h"
 
 #include "jni.h"
 #include "Log.h"
@@ -17,7 +17,7 @@ jint Java_com_example_android_1sensor_1sample_Native_onCreate(
     LOG_DEBUG("native", "onCreate()");
     Information::CreateInstance("android", pEnv);
     android::os::build::Version::Load(pEnv);
-    SensorManager::CreateInstance();
+    SensorManager::CreateInstance<bridge::SensorManager>();
     return 1;
 }
 
