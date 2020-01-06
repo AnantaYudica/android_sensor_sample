@@ -2,17 +2,50 @@
 // Created by Ananta Yudica on 02/01/2020.
 //
 
-#include "../SensorManager.h"
+#include "SensorManager.h"
+#include "../Definition.h"
+#include "sensor/Default.h"
+#include "sensor/Accelerometer.h"
 
 #include "jni.h"
 #include "../Log.h"
 #include <vector>
+
+namespace bridge
+{
+
+SensorManager::SensorManager() :
+    ::SensorManager()
+{
+    LOG_DEBUG("SensorManager", "Constructor(...)");
+    Init();
+}
+
+SensorManager::~SensorManager()
+{
+    LOG_DEBUG("SensorManager", "Destructor(...)");
+}
+
+int SensorManager::InitSensor(const int & type, ::Sensor * & sensor, InfSensorType infsensor)
+{
+    LOG_DEBUG("SensorManager", "InitSensor(...)");
+    if (sensor != nullptr) return 2;
+    if (type == static_cast<int>(::sensor::Type::invalid))  return -1;
+    if (type == static_cast<int>(::sensor::Type::accelerometer))
+        sensor = new bridge::sensor::Accelerometer(infsensor);
+    else
+        sensor = new bridge::sensor::Default(infsensor);
+    return 1;
+}
+
+} //!bridge
 
 extern "C"
 jboolean  Java_com_example_android_1sensor_1sample_SensorManager_hasInstance(
     JNIEnv* pEnv,
     jobject pThis)
 {
+    LOG_DEBUG("native/SensorManager", "hasInstance(...)");
     return SensorManager::HasInstance();
 }
 
@@ -21,6 +54,7 @@ jint Java_com_example_android_1sensor_1sample_SensorManager_size(
     JNIEnv* pEnv,
     jobject pThis)
 {
+    LOG_DEBUG("native/SensorManager", "size(...)");
     return (int)SensorManager::GetInstance().Size();
 }
 
@@ -30,6 +64,7 @@ jint Java_com_example_android_1sensor_1sample_SensorManager_findOne(
     jobject pThis,
     jint pVal)
 {
+    LOG_DEBUG("native/SensorManager", "findOne(...)");
     return (int)SensorManager::GetInstance().FindOne(pVal).first;
 }
 
@@ -39,6 +74,7 @@ jintArray Java_com_example_android_1sensor_1sample_SensorManager_find(
     jobject pThis,
     jint pVal)
 {
+    LOG_DEBUG("native/SensorManager", "find(...)");
     jintArray res;
     size_t size = 0;
     typename SensorManager::ListPairValueType list;
@@ -60,6 +96,7 @@ jint Java_com_example_android_1sensor_1sample_SensorManager_type(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "type(...)");
     return SensorManager::GetInstance()[pId].Type();
 }
 
@@ -69,6 +106,7 @@ jint Java_com_example_android_1sensor_1sample_SensorManager_minDelay(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "minDelay(...)");
     return SensorManager::GetInstance()[pId].MinDelay();
 }
 
@@ -78,6 +116,7 @@ jfloat Java_com_example_android_1sensor_1sample_SensorManager_resolution(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "resolution(...)");
     return SensorManager::GetInstance()[pId].Resolution();
 }
 
@@ -87,6 +126,7 @@ jstring Java_com_example_android_1sensor_1sample_SensorManager_name(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "name(...)");
     return pEnv->NewStringUTF(SensorManager::GetInstance()[pId].Name());
 }
 
@@ -96,6 +136,7 @@ jstring Java_com_example_android_1sensor_1sample_SensorManager_vendor(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "vendor(...)");
     return pEnv->NewStringUTF(SensorManager::GetInstance()[pId].Vendor());
 }
 
@@ -105,6 +146,7 @@ jint Java_com_example_android_1sensor_1sample_SensorManager_lastErrorCode(
         jobject pThis,
         jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "lastErrorCode(...)");
     return SensorManager::GetInstance().GetSensorEvent(pId).get().LastErrorCode();
 }
 
@@ -115,6 +157,7 @@ void Java_com_example_android_1sensor_1sample_SensorManager_delay__II(
     jint pId,
     jint pVal)
 {
+    LOG_DEBUG("native/SensorManager", "delay(...)");
     SensorManager::GetInstance().GetSensorEvent(pId).get().Delay((int)pVal);
 }
 
@@ -124,6 +167,7 @@ jint Java_com_example_android_1sensor_1sample_SensorManager_delay__I(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "delay(...)");
     return SensorManager::GetInstance().GetSensorEvent(pId).get().Delay();
 }
 
@@ -133,6 +177,7 @@ void Java_com_example_android_1sensor_1sample_SensorManager_enable(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "enable(...)");
     SensorManager::GetInstance().GetSensorEvent(pId).get().Enable();
 }
 
@@ -142,6 +187,7 @@ void Java_com_example_android_1sensor_1sample_SensorManager_disable(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "disable(...)");
     SensorManager::GetInstance().GetSensorEvent(pId).get().Disable();
 }
 
@@ -151,6 +197,7 @@ void Java_com_example_android_1sensor_1sample_SensorManager_pause(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "pause(...)");
     SensorManager::GetInstance().GetSensorEvent(pId).get().Pause();
 }
 
@@ -160,6 +207,7 @@ void Java_com_example_android_1sensor_1sample_SensorManager_resume(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "resume(...)");
     SensorManager::GetInstance().GetSensorEvent(pId).get().Resume();
 }
 
@@ -169,6 +217,7 @@ void Java_com_example_android_1sensor_1sample_SensorManager_start(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "start(...)");
     SensorManager::GetInstance().GetSensorEvent(pId).get().Start();
 }
 
@@ -178,6 +227,7 @@ void Java_com_example_android_1sensor_1sample_SensorManager_stop(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "stop(...)");
     SensorManager::GetInstance().GetSensorEvent(pId).get().Stop();
 }
 
@@ -187,6 +237,7 @@ jboolean Java_com_example_android_1sensor_1sample_SensorManager_isError(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "isError(...)");
     return SensorManager::GetInstance().GetSensorEvent(pId).get().IsError();
 }
 
@@ -196,6 +247,7 @@ jboolean Java_com_example_android_1sensor_1sample_SensorManager_isEnable(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "isEnable(...)");
     return SensorManager::GetInstance().GetSensorEvent(pId).get().IsEnable();
 }
 
@@ -205,6 +257,7 @@ jboolean Java_com_example_android_1sensor_1sample_SensorManager_isPause(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "isPause(...)");
     return SensorManager::GetInstance().GetSensorEvent(pId).get().IsPause();
 }
 
@@ -214,6 +267,7 @@ jboolean Java_com_example_android_1sensor_1sample_SensorManager_isRun(
     jobject pThis,
     jint pId)
 {
+    LOG_DEBUG("native/SensorManager", "isRun(...)");
     return SensorManager::GetInstance().GetSensorEvent(pId).get().IsRun();
 }
 
