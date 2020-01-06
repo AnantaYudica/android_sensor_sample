@@ -8,6 +8,7 @@
 #include "Sensor.h"
 #include "SensorEvent.h"
 #include "Definition.h"
+#include "Log.h"
 
 #include <android/Sensor.h>
 #include <vector>
@@ -26,7 +27,8 @@ public:
 private:
     static SensorManager * ms_instance;
 public:
-    static SensorManager & CreateInstance();
+    template<typename TDerived, typename ... TArgs>
+    static SensorManager & CreateInstance(TArgs && ... args);
     static SensorManager & GetInstance();
     static bool HasInstance();
     static void DestroyInstance();
@@ -35,14 +37,17 @@ private:
     SensorEvent ** m_sensorEvents;
     InfSensorManagerType m_sensorManager;
     size_t m_sensorsSize;
-private:
+protected:
     void Init();
+private:
     bool InitSensorManager();
     bool InitSensors();
-private:
+protected:
+    virtual int InitSensor(const int & type, ::Sensor * & sensor, InfSensorType infsensor) = 0;
+protected:
     SensorManager();
 public:
-    ~SensorManager();
+    virtual ~SensorManager();
 public:
     size_t Size() const;
     PairValueType FindOne(const int & type);
@@ -59,6 +64,15 @@ public:
     ValueType& operator[](const KeyType & key);
     const ValueType& operator[](const KeyType & key) const;
 };
+
+template<typename TDerived, typename ... TArgs>
+SensorManager & SensorManager::CreateInstance(TArgs && ... args)
+{
+    LOG_DEBUG("SensorManger", "SensorManager::CreateInstance(...)");
+    if (!ms_instance)
+        ms_instance = new TDerived(std::forward<TArgs>(args)...);
+    return *ms_instance;
+}
 
 
 

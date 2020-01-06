@@ -14,14 +14,6 @@
 
 SensorManager * SensorManager::ms_instance = nullptr;
 
-SensorManager & SensorManager::CreateInstance()
-{
-    LOG_DEBUG("SensorManger", "SensorManager::CreateInstance(...)");
-    if (!ms_instance)
-        ms_instance = new SensorManager();
-    return *ms_instance;
-}
-
 SensorManager & SensorManager::GetInstance()
 {
     return *ms_instance;
@@ -59,13 +51,19 @@ bool SensorManager::InitSensors()
     const auto size = sensor::manager::GetSensorList(m_sensorManager, nullptr);
     if (size == 0) return false;
     m_sensorsSize = size;
+    int type = 0;
+    InfSensorType sensor;
     m_sensors = new Sensor*[size];
     m_sensorEvents = new SensorEvent*[size];
     InfSensorListType sensor_list = sensor::AllocateList(size);
     sensor::manager::GetSensorList(m_sensorManager, &sensor_list);
     for (auto i = 0; i < size; ++i)
     {
-        m_sensors[i] = new sensor::Default(sensor_list[i]);
+        type = -1;
+        m_sensors[i] = nullptr;
+        sensor = sensor_list[i];
+        sensor::GetType(sensor, &type);
+        InitSensor(type, m_sensors[i], sensor);
         m_sensorEvents[i] = nullptr;
     }
     sensor::FreeList(sensor_list);
@@ -78,7 +76,6 @@ SensorManager::SensorManager() :
     m_sensorsSize(0)
 {
     LOG_DEBUG("SensorManger", "Constructor(...)");
-    Init();
 }
 
 SensorManager::~SensorManager()
