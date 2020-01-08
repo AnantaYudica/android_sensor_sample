@@ -271,3 +271,33 @@ jboolean Java_com_example_android_1sensor_1sample_SensorManager_isRun(
     return SensorManager::GetInstance().GetSensorEvent(pId).get().IsRun();
 }
 
+extern "C"
+jint Java_com_example_android_1sensor_1sample_SensorManager_link(
+    JNIEnv* pEnv,
+    jobject pThis,
+    jint pId,
+    jobject obj,
+    jstring name)
+{
+    LOG_DEBUG("native/SensorManager", "link(...)");
+    auto & sensor = SensorManager::GetInstance()[pId];
+    auto cast_sensor = dynamic_cast<bridge::Sensor*>(&sensor);
+    if (!cast_sensor) return -1;
+    const char * name_cstr = pEnv->GetStringUTFChars(name, nullptr);
+    auto res = cast_sensor->Link(pEnv, obj, name_cstr);
+    pEnv->ReleaseStringUTFChars(name, name_cstr);
+    return res;
+}
+
+extern "C"
+jint Java_com_example_android_1sensor_1sample_SensorManager_unlink(
+    JNIEnv* pEnv,
+    jobject pThis,
+    jint pId)
+{
+    LOG_DEBUG("native/SensorManager", "unlink(...)");
+    auto & sensor = SensorManager::GetInstance()[pId];
+    auto cast_sensor = dynamic_cast<bridge::Sensor*>(&sensor);
+    if (!cast_sensor) return -1;
+    cast_sensor->Unlink(pEnv);
+}
