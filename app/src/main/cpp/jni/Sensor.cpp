@@ -66,11 +66,7 @@ void Sensor::Clean()
     if (m_env) m_env = nullptr;
     if (m_class) delete m_class;
     m_class = nullptr;
-    if (m_object)
-    {
-        m_env->DeleteGlobalRef(*m_object);
-        delete m_object;
-    }
+    if (m_object) delete m_object;
     m_object = nullptr;
     if (m_callMethodid) delete m_callMethodid;
     m_callMethodid = nullptr;
@@ -90,7 +86,6 @@ int Sensor::Link(JNIEnv* p_env, jobject p_this, const char * link_method_name)
     Init();
     p_env->GetJavaVM(&m_jvm);
     m_env = p_env;
-    *m_object = p_env->NewGlobalRef(p_this);
     *m_class = p_env->GetObjectClass(p_this);
     if (!*m_class)
     {
@@ -108,6 +103,12 @@ int Sensor::Link(JNIEnv* p_env, jobject p_this, const char * link_method_name)
         Clean();
         return -5;
     }
+    *m_object = p_env->NewGlobalRef(p_this);
+    if (*m_object == NULL)
+    {
+        Clean();
+        return -6;
+    }
     m_linked = true;
     return 1;
 }
@@ -115,8 +116,9 @@ int Sensor::Link(JNIEnv* p_env, jobject p_this, const char * link_method_name)
 void Sensor::Unlink(JNIEnv* p_env)
 {
     if (!IsLink()) return;
-    Clean();
     m_linked = false;
+    p_env->DeleteGlobalRef(*m_object);
+    Clean();
 }
 
 bool Sensor::IsLink() const
