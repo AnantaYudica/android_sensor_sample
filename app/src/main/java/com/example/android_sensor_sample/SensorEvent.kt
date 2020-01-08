@@ -40,6 +40,36 @@ class SensorEvent(private var id : Int,
         stop_btn.setOnClickListener(::stopOnClick)
         SensorManager.getInstance().delay(id, SensorManager.getInstance().minDelay(id))
         parent.addView(sensor_event_layout)
+
+        setDelay(delay())
+        setDelayUnitName()
+        if (SensorManager.getInstance().isEnable(id))
+        {
+            if (SensorManager.getInstance().isPause(id))
+            {
+                pause_btn.visibility = View.GONE
+            }
+            else
+            {
+                pause_btn.visibility = View.VISIBLE
+            }
+            if (SensorManager.getInstance().isRun(id))
+            {
+                stop_btn.visibility = View.VISIBLE
+                play_btn.visibility = View.GONE
+            }
+            else
+            {
+                stop_btn.visibility = View.GONE
+                play_btn.visibility = View.VISIBLE
+            }
+        }
+        else
+        {
+            pause_btn.visibility = View.GONE
+            stop_btn.visibility = View.GONE
+            play_btn.visibility = View.VISIBLE
+        }
     }
     private fun delayUpdateOnClick(v: View)
     {
@@ -49,10 +79,13 @@ class SensorEvent(private var id : Int,
     private fun pauseOnClick(v: View)
     {
         SensorManager.getInstance().pause(id)
-        update()
+        play_btn.visibility = View.VISIBLE
+        pause_btn.visibility = View.GONE
     }
     private fun playOnClick(v: View)
     {
+        if (!SensorManager.getInstance().isPrepareEnable(id) &&
+                !SensorManager.getInstance().isEnable(id)) return
         if (SensorManager.getInstance().isPause(id))
         {
             SensorManager.getInstance().resume(id)
@@ -61,12 +94,15 @@ class SensorEvent(private var id : Int,
         {
             SensorManager.getInstance().start(id)
         }
-        update()
+        pause_btn.visibility = View.VISIBLE
+        stop_btn.visibility = View.VISIBLE
+        play_btn.visibility = View.GONE
     }
     private fun stopOnClick(v: View)
     {
         SensorManager.getInstance().stop(id)
-        update()
+        play_btn.visibility = View.VISIBLE
+        stop_btn.visibility = View.GONE
     }
     private fun delayUpdateCallback(value : Float) : Int
     {
@@ -104,38 +140,6 @@ class SensorEvent(private var id : Int,
     }
     fun update()
     {
-        setDelay(delay())
-        setDelayUnitName()
-        if (SensorManager.getInstance().isEnable(id))
-        {
-            if (SensorManager.getInstance().isPause(id))
-            {
-                pause_btn.visibility = View.GONE
-            }
-            else
-            {
-                pause_btn.visibility = View.VISIBLE
-            }
-            if (SensorManager.getInstance().isRun(id))
-            {
-                stop_btn.visibility = View.VISIBLE
-                play_btn.visibility = View.GONE
-                play_btn.isClickable = false
-            }
-            else
-            {
-                stop_btn.visibility = View.GONE
-                play_btn.visibility = View.VISIBLE
-                play_btn.isClickable = true
-            }
-        }
-        else
-        {
-            pause_btn.visibility = View.GONE
-            stop_btn.visibility = View.GONE
-            play_btn.visibility = View.VISIBLE
-            play_btn.isClickable = false
-        }
     }
     fun delay() : Float
     {
