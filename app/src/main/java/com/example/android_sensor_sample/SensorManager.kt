@@ -37,6 +37,8 @@ class SensorManager
     external fun isEnable(id : Int) : Boolean
     external fun isPause(id : Int) : Boolean
     external fun isRun(id : Int) : Boolean
+    external fun isPrepareEnable(id : Int) : Boolean
+    external fun isPreparePause(id : Int) : Boolean
     external fun link(id : Int, obj : Any, name : String) : Int
     external fun unlink(id : Int) : Void
 }
