@@ -113,7 +113,7 @@ private:
     void SetResume();
     void SetStart();
     void SetStop();
-private:
+public:
     bool IsPrepareEnable() const;
     bool IsPreparePause() const;
 public:
