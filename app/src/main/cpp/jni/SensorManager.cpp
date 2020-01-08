@@ -272,6 +272,26 @@ jboolean Java_com_example_android_1sensor_1sample_SensorManager_isRun(
 }
 
 extern "C"
+jboolean Java_com_example_android_1sensor_1sample_SensorManager_isPrepareEnable(
+        JNIEnv* pEnv,
+        jobject pThis,
+        jint pId)
+{
+    LOG_DEBUG("native/SensorManager", "isPrepareEnable(...)");
+    return SensorManager::GetInstance().GetSensorEvent(pId).get().IsPrepareEnable();
+}
+
+extern "C"
+jboolean Java_com_example_android_1sensor_1sample_SensorManager_isPreparePause(
+        JNIEnv* pEnv,
+        jobject pThis,
+        jint pId)
+{
+    LOG_DEBUG("native/SensorManager", "isPreparePause(...)");
+    return SensorManager::GetInstance().GetSensorEvent(pId).get().IsPreparePause();
+}
+
+extern "C"
 jint Java_com_example_android_1sensor_1sample_SensorManager_link(
     JNIEnv* pEnv,
     jobject pThis,
