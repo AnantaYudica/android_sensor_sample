@@ -27,6 +27,12 @@ class SensorDetail(private var id : Int,
         resolution_value = sensor_detail_layout.findViewById(R.id.resolution_value)
         vendor_value = sensor_detail_layout.findViewById(R.id.vendor_value)
         parent.addView(sensor_detail_layout)
+
+        setType()
+        setName()
+        setMinDelay()
+        setResolution()
+        setVendor()
     }
     private fun setType()
     {
@@ -51,11 +57,6 @@ class SensorDetail(private var id : Int,
     }
     fun update()
     {
-        setType()
-        setName()
-        setMinDelay()
-        setResolution()
-        setVendor()
     }
     fun type() : Int
     {
