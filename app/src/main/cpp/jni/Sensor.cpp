@@ -13,6 +13,7 @@ constexpr size_t Sensor::ms_format_method_signature_size;
 
 Sensor::Sensor() :
     m_linked(false),
+    m_jvm(nullptr),
     m_env(nullptr),
     m_class(nullptr),
     m_object(nullptr),
@@ -27,6 +28,7 @@ Sensor::~Sensor()
 
 Sensor::Sensor(const Sensor & cpy) :
     m_linked(cpy.m_linked),
+    m_jvm(cpy.m_jvm),
     m_env(cpy.m_env),
     m_class(cpy.m_class),
     m_object(cpy.m_object),
@@ -35,12 +37,14 @@ Sensor::Sensor(const Sensor & cpy) :
 
 Sensor::Sensor(Sensor && mov) :
     m_linked(mov.m_linked),
+    m_jvm(mov.m_jvm),
     m_env(mov.m_env),
     m_class(mov.m_class),
     m_object(mov.m_object),
     m_callMethodid(mov.m_callMethodid)
 {
     mov.m_linked = false;
+    mov.m_jvm = nullptr;
     mov.m_env = nullptr;
     mov.m_class = nullptr;
     mov.m_object = nullptr;
@@ -49,7 +53,8 @@ Sensor::Sensor(Sensor && mov) :
 
 void Sensor::Init()
 {
-    m_env = new JNIEnv;
+    m_jvm = nullptr;
+    m_env = nullptr;
     m_class = new jclass;
     m_object = new jobject;
     m_callMethodid = new jmethodID;
@@ -57,11 +62,15 @@ void Sensor::Init()
 
 void Sensor::Clean()
 {
-    if (m_env) delete m_env;
-    m_env = nullptr;
+    if (m_jvm) m_jvm = nullptr;
+    if (m_env) m_env = nullptr;
     if (m_class) delete m_class;
     m_class = nullptr;
-    if (m_object) delete m_object;
+    if (m_object)
+    {
+        m_env->DeleteGlobalRef(*m_object);
+        delete m_object;
+    }
     m_object = nullptr;
     if (m_callMethodid) delete m_callMethodid;
     m_callMethodid = nullptr;
@@ -79,8 +88,9 @@ int Sensor::Link(JNIEnv* p_env, jobject p_this, const char * link_method_name)
     if (!p_env) return -2;
     if (!p_this) return -3;
     Init();
+    p_env->GetJavaVM(&m_jvm);
     m_env = p_env;
-    *m_object = p_this;
+    *m_object = p_env->NewGlobalRef(p_this);
     *m_class = p_env->GetObjectClass(p_this);
     if (!*m_class)
     {
@@ -100,6 +110,13 @@ int Sensor::Link(JNIEnv* p_env, jobject p_this, const char * link_method_name)
     }
     m_linked = true;
     return 1;
+}
+
+void Sensor::Unlink(JNIEnv* p_env)
+{
+    if (!IsLink()) return;
+    Clean();
+    m_linked = false;
 }
 
 bool Sensor::IsLink() const
