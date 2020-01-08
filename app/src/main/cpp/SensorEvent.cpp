@@ -112,7 +112,7 @@ int SensorEvent::Init(const int& delay)
     if (!m_sensor) return __SetError<int>(this, m_error, ERROR_NO_SENSOR, -1);
     else m_delay = delay >= m_sensor->MinDelay() ? delay : m_sensor->MinDelay();
     if (!m_sensormanager) return __SetError<int>(this, m_error, ERROR_NO_SENSORMANAGER, -2);
-    return 0;
+    return 1;
 }
 
 int SensorEvent::InitThread()
@@ -158,10 +158,9 @@ int SensorEvent::InitEventData()
 int SensorEvent::InitEnableSensor()
 {
     LOG_DEBUG("SensorEvent", "InitEnableSensor(...)");
-
     if (sensor::event::queue::EnableSensor(m_eventQueue, m_sensor->Interface()) != 0)
         return __SetError<int>(this, m_error, ERROR_ENABLE_SENSOR, -1);
-    return 0;
+    return 1;
 }
 
 int SensorEvent::InitDisableSensor()
@@ -169,7 +168,7 @@ int SensorEvent::InitDisableSensor()
     LOG_DEBUG("SensorEvent", "InitDisableSensor(...)");
     if (sensor::event::queue::DisableSensor(m_eventQueue, m_sensor->Interface()) != 0)
         return __SetError<int>(this, m_error, ERROR_DISABLE_SENSOR, -1);
-    return 0;
+    return 1;
 }
 
 int SensorEvent::InitEventRate()
@@ -178,7 +177,7 @@ int SensorEvent::InitEventRate()
     if  (sensor::event::queue::SetEventRate(m_eventQueue, m_sensor->Interface(), m_delay) != 0)
         return __SetError<int>(this, m_error, ERROR_SET_EVENT_RATE, -1);
     LOG_DEBUG("SensorEvent", "set delay %d microseconds", m_delay);
-    return 0;
+    return 1;
 }
 
 void SensorEvent::InitEnable()
@@ -259,7 +258,7 @@ void SensorEvent::Run()
         InitEnable();
     InfSensorEventType sensor_events = sensor::AllocateEvents(m_queueSize);
     SetStart();
-    while(!IsError() && !IsRun())
+    while(!IsError() && IsRun())
     {
         const auto is_prepare_pause = IsPreparePause();
         const auto is_pause = IsPause();
@@ -275,12 +274,7 @@ void SensorEvent::Run()
         }
         if (!IsEnable() || !IsPrepareEnable()) continue;
         auto has_events = sensor::event::queue::HasEvents(m_eventQueue);
-        if(has_events < 0)
-        {
-            __SetError<void>(this, m_error, ERROR_HAS_EVENTS);
-            continue;
-        }
-        else if (has_events == 0) continue;
+        if(has_events <= 0) continue;
         const auto size = sensor::event::queue::GetEvents(m_eventQueue,
                 sensor_events, m_queueSize);
         if (size < 0)
@@ -295,6 +289,8 @@ void SensorEvent::Run()
             continue;
         }
     }
+    if (IsError())
+        LOG_DEBUG("SensorEvent", "err : %d", LastErrorCode());
     SetStop();
     if (IsEnable()) InitDisable();
     ReleaseEventData();
@@ -313,7 +309,7 @@ void SensorEvent::Delay(const int & val)
     if (val >= m_sensor->MinDelay())
         m_delay = val;
     if (IsRun() && IsEnable()) InitEventRate();
-    LOG_DEBUG("SensorEvent", "delya : %d", m_delay);
+    LOG_DEBUG("SensorEvent", "delay : %d", m_delay);
 }
 
 int SensorEvent::LastErrorCode() const
@@ -354,7 +350,8 @@ void SensorEvent::Resume()
 void SensorEvent::Start()
 {
     LOG_DEBUG("SensorEvent", "Start(...)");
-    if (IsRun() || m_thread) return;
+    if (!IsPrepareEnable() || IsRun()|| m_thread) return;
+    LOG_DEBUG("SensorEvent", "1");
     if (!InitThread()) SetStop();
 }
 
@@ -368,56 +365,67 @@ void SensorEvent::Stop()
 
 void SensorEvent::SetError()
 {
+    LOG_DEBUG("SensorEvent", "SetError(...)");
     m_flag.fetch_or(FLAG_ERROR_SENSOR, std::memory_order_release);
 }
 
 void SensorEvent::SetPrepareEnable()
 {
+    LOG_DEBUG("SensorEvent", "SetPrepareEnable(...)");
     m_flag.fetch_or(FLAG_PREPARE_ENABLE_SENSOR, std::memory_order_release);
 }
 
 void SensorEvent::SetPrepareDisable()
 {
+    LOG_DEBUG("SensorEvent", "SetPrepareDisable(...)");
     m_flag.fetch_and(~FLAG_PREPARE_ENABLE_SENSOR, std::memory_order_release);
 }
 
 void SensorEvent::SetEnable()
 {
+    LOG_DEBUG("SensorEvent", "SetEnable(...)");
     m_flag.fetch_or(FLAG_ENABLE_SENSOR, std::memory_order_release);
 }
 
 void SensorEvent::SetDisable()
 {
+    LOG_DEBUG("SensorEvent", "SetDisable(...)");
     m_flag.fetch_and(~FLAG_ENABLE_SENSOR, std::memory_order_release);
 }
 
 void SensorEvent::SetPreparePause()
 {
+    LOG_DEBUG("SensorEvent", "SetPreparePause(...)");
     m_flag.fetch_or(FLAG_PREPARE_PAUSE_SENSOR, std::memory_order_release);
 }
 
 void SensorEvent::SetPrepareResume()
 {
+    LOG_DEBUG("SensorEvent", "SetPrepareResume(...)");
     m_flag.fetch_and(~FLAG_PREPARE_PAUSE_SENSOR, std::memory_order_release);
 }
 
 void SensorEvent::SetPause()
 {
+    LOG_DEBUG("SensorEvent", "SetPause(...)");
     m_flag.fetch_or(FLAG_PAUSE_SENSOR, std::memory_order_release);
 }
 
 void SensorEvent::SetResume()
 {
+    LOG_DEBUG("SensorEvent", "SetResume(...)");
     m_flag.fetch_and(~FLAG_PAUSE_SENSOR, std::memory_order_release);
 }
 
 void SensorEvent::SetStart()
 {
+    LOG_DEBUG("SensorEvent", "SetStart(...)");
     m_flag.fetch_or(FLAG_RUN_SENSOR, std::memory_order_release);
 }
 
 void SensorEvent::SetStop()
 {
+    LOG_DEBUG("SensorEvent", "SetStop(...)");
     m_flag.fetch_and(~FLAG_RUN_SENSOR, std::memory_order_release);
 }
 
