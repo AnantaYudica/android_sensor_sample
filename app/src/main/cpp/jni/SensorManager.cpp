@@ -290,7 +290,7 @@ jint Java_com_example_android_1sensor_1sample_SensorManager_link(
 }
 
 extern "C"
-jint Java_com_example_android_1sensor_1sample_SensorManager_unlink(
+void Java_com_example_android_1sensor_1sample_SensorManager_unlink(
     JNIEnv* pEnv,
     jobject pThis,
     jint pId)
@@ -298,6 +298,6 @@ jint Java_com_example_android_1sensor_1sample_SensorManager_unlink(
     LOG_DEBUG("native/SensorManager", "unlink(...)");
     auto & sensor = SensorManager::GetInstance()[pId];
     auto cast_sensor = dynamic_cast<bridge::Sensor*>(&sensor);
-    if (!cast_sensor) return -1;
+    if (!cast_sensor) return;
     cast_sensor->Unlink(pEnv);
 }
