@@ -19,34 +19,34 @@ Accelerometer::Accelerometer(ASensor const* ptr) :
     Sensor(ptr),
     m_callback(&Accelerometer::__CallbackDefault)
 {
-    LOG_DEBUG("sensor::Default", "constructor(...)");
+    LOG_DEBUG("sensor::Accelerometer", "constructor(...)");
 }
 
 Accelerometer::Accelerometer(ASensor const* ptr, CallbackType callback) :
     Sensor(ptr),
     m_callback(callback)
 {
-    LOG_DEBUG("sensor::Default", "constructor(...)");
+    LOG_DEBUG("sensor::Accelerometer", "constructor(...)");
 }
 
 Accelerometer::Accelerometer(const Accelerometer & cpy) :
     Sensor(cpy),
     m_callback(cpy.m_callback)
 {
-    LOG_DEBUG("sensor::Default", "copy constructor(...)");
+    LOG_DEBUG("sensor::Accelerometer", "copy constructor(...)");
 }
 
 Accelerometer::Accelerometer(Accelerometer && mov) :
         Sensor(std::move(mov)),
         m_callback(mov.m_callback)
 {
-    LOG_DEBUG("sensor::Default", "move constructor(...)");
+    LOG_DEBUG("sensor::Accelerometer", "move constructor(...)");
     mov.m_callback = &Accelerometer::__CallbackDefault;
 }
 
 Accelerometer::~Accelerometer()
 {
-    LOG_DEBUG("sensor::Default", "destructor(...)");
+    LOG_DEBUG("sensor::Accelerometer", "destructor(...)");
     m_callback = &Accelerometer::__CallbackDefault;
 }
 void Accelerometer::SetCallback(CallbackType callback)
