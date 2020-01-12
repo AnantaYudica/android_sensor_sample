@@ -26,7 +26,8 @@ add_library(Sensor SHARED
         ../src/main/cpp/sensor/Default.cpp
         ../src/main/cpp/sensor/Accelerometer.cpp
         ../src/main/cpp/sensor/MagneticField.cpp
-        ../src/main/cpp/sensor/Gyroscope.cpp)
+        ../src/main/cpp/sensor/Gyroscope.cpp
+        ../src/main/cpp/CollectionManager.cpp)
 
 find_library(Loglib log)
 
