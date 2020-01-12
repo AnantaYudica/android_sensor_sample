@@ -20,6 +20,7 @@ add_library(Sensor SHARED
         ../src/main/cpp/sensor_event/Default.cpp
         ../src/main/cpp/sensor_event/Accelerometer.cpp
         ../src/main/cpp/sensor_event/MagneticField.cpp
+        ../src/main/cpp/sensor_event/Gyroscope.cpp
         ../src/main/cpp/sensor/Default.cpp
         ../src/main/cpp/sensor/Accelerometer.cpp)
 
