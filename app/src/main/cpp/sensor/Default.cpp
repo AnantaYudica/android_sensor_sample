@@ -24,7 +24,7 @@ Default::Default(ASensor const* ptr) :
 
 Default::Default(ASensor const* ptr, CallbackType callback) :
     Sensor(ptr),
-    m_callback(callback)
+    m_callback((callback ? callback : &Default::__CallbackDefault))
 {
     LOG_DEBUG("sensor::Default", "constructor(...)");
 }

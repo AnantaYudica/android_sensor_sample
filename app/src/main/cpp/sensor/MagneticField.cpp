@@ -24,7 +24,7 @@ MagneticField::MagneticField(ASensor const* ptr) :
 
 MagneticField::MagneticField(ASensor const* ptr, CallbackType callback) :
     Sensor(ptr),
-    m_callback(callback)
+    m_callback((callback ? callback : &MagneticField::__CallbackDefault))
 {
     LOG_DEBUG("sensor::MagneticField", "constructor(...)");
 }

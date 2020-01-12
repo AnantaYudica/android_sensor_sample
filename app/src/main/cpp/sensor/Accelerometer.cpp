@@ -24,7 +24,7 @@ Accelerometer::Accelerometer(ASensor const* ptr) :
 
 Accelerometer::Accelerometer(ASensor const* ptr, CallbackType callback) :
     Sensor(ptr),
-    m_callback(callback)
+    m_callback((callback ? callback : &Accelerometer::__CallbackDefault))
 {
     LOG_DEBUG("sensor::Accelerometer", "constructor(...)");
 }
