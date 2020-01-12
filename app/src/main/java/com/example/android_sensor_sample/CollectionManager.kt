@@ -6,15 +6,15 @@ import com.example.android_sensor_sample.storage.Collection
 import com.example.android_sensor_sample.storage.col.Property
 import java.util.*
 
-class StorageManager(private val ctx : Context)
+class CollectionManager(private val ctx : Context)
 {
     companion object
     {
-        @Volatile private var ms_instance : StorageManager? = null
+        @Volatile private var ms_instance : CollectionManager? = null
         fun createInstance(ctx : Context)
         {
             if (ms_instance != null) return
-            ms_instance = StorageManager(ctx)
+            ms_instance = CollectionManager(ctx)
             ms_instance?.start()
         }
         fun destroyInstance()
@@ -28,7 +28,7 @@ class StorageManager(private val ctx : Context)
         {
             return ms_instance != null
         }
-        fun getInstance() : StorageManager?
+        fun getInstance() : CollectionManager?
         {
             return ms_instance
         }
