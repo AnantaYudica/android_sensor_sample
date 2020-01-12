@@ -7,7 +7,8 @@ add_library(Bridge SHARED ../src/main/cpp/Bridge.cpp
         ../src/main/cpp/jni/Sensor.cpp
         ../src/main/cpp/jni/sensor/Default.cpp
         ../src/main/cpp/jni/sensor/Accelerometer.cpp
-        ../src/main/cpp/jni/sensor/MagneticField.cpp)
+        ../src/main/cpp/jni/sensor/MagneticField.cpp
+        ../src/main/cpp/jni/sensor/Gyroscope.cpp)
 
 add_library(Android SHARED
         ../src/main/cpp/android/os/build/Version.cpp)
