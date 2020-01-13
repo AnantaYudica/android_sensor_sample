@@ -29,13 +29,16 @@ protected:
     virtual void __DestroyInstance() = 0;
 public:
     virtual void HasProperty(const char * key_cstr,
-        std::function<void(bool)> callback) = 0;
+        std::function<void(const char *, bool)> callback) = 0;
+public:
     virtual void GetProperty(const char * key_cstr,
-        std::function<void(const char *)> callback) = 0;
+        std::function<void(const char *, const char *)> callback) = 0;
+public:
     virtual void InitProperty(const char * key_cstr, const char * val_cstr,
-        std::function<void(bool)> callback = nullptr) = 0;
+        std::function<void(const char *, const char *, bool, const char *)> callback = nullptr) = 0;
+public:
     virtual void SetProperty(const char * key_cstr, const char * val_cstr,
-         std::function<void()> callback = nullptr) = 0;
+         std::function<void(const char *, const char *)> callback = nullptr) = 0;
 };
 
 template<typename TDerived, typename ... TArgs>
