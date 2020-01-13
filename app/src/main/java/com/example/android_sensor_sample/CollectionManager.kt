@@ -69,6 +69,16 @@ class CollectionManager(private val ctx : Context)
     {
         m_db?.close()
     }
+    private external fun hasPropertyNativeCallback(key: String, result : Boolean,
+                                                   native_callback : Long)
+    private external fun getPropertyNativeCallback(key: String, result : String,
+                                                   native_callback : Long)
+    private external fun initPropertyNativeCallback(key: String, value : String,
+                                                    is_init : Boolean,
+                                                    curr_value : String,
+                                                    native_callback : Long)
+    private external fun setPropertyNativeCallback(key: String, value : String,
+                                                   native_callback : Long)
     fun hasProperty(key: String,
                     callback : (String, Boolean)->Unit)
     {
@@ -77,12 +87,23 @@ class CollectionManager(private val ctx : Context)
             callback(key, f != null)
         }
     }
-    fun getProperty(key: String,
-                    callback : (String, String)->Unit)
+    fun hasProperty(key: String, native_callback : Long)
+    {
+        hasProperty(key) {key : String, res : Boolean ->
+            hasPropertyNativeCallback(key, res, native_callback)
+        }
+    }
+    fun getProperty(key: String, callback : (String, String)->Unit)
     {
         m_queue.offer{
             val f = m_db?.property()?.find(key)
             callback(key, f?.value ?: "")
+        }
+    }
+    fun getProperty(key: String, native_callback : Long)
+    {
+        getProperty(key){ key : String, res : String ->
+            getPropertyNativeCallback(key, res, native_callback)
         }
     }
     fun initProperty(key: String, value: String,
@@ -94,6 +115,14 @@ class CollectionManager(private val ctx : Context)
             if(f == null) m_db?.property()?.insertAll(Property(key = "$key", value = "$value"))
             else curr = f.value
             callback?.invoke(key, value, f == null, curr)
+        }
+    }
+    fun initProperty(key: String, value: String, native_callback : Long)
+    {
+        if (native_callback == 0.toLong()) initProperty(key, value)
+        else initProperty(key, value) {key : String, value : String,
+                                       is_init : Boolean, curr_value : String ->
+            initPropertyNativeCallback(key, value, is_init, curr_value, native_callback)
         }
     }
     fun setProperty(key: String, value: String,
@@ -108,7 +137,14 @@ class CollectionManager(private val ctx : Context)
             callback?.invoke(key, value)
         }
     }
-    fun run() : Unit
+    fun setProperty(key: String, value: String, native_callback : Long)
+    {
+        if (native_callback == 0.toLong()) setProperty(key, value)
+        else setProperty(key, value) {key : String, value : String ->
+            setPropertyNativeCallback(key, value, native_callback)
+        }
+    }
+    fun run()
     {
         while (m_run)
         {
