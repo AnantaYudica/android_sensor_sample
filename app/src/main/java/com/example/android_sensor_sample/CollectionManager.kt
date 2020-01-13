@@ -69,42 +69,43 @@ class CollectionManager(private val ctx : Context)
     {
         m_db?.close()
     }
-    fun hasProperty(key: String, callback : (Boolean)->Unit)
+    fun hasProperty(key: String,
+                    callback : (String, Boolean)->Unit)
     {
         m_queue.offer{
             val f = m_db?.property()?.find(key)
-            callback(f != null)
+            callback(key, f != null)
         }
     }
-    fun getProperty(key: String, callback : (String)->Unit)
+    fun getProperty(key: String,
+                    callback : (String, String)->Unit)
     {
         m_queue.offer{
             val f = m_db?.property()?.find(key)
-            callback(f?.value ?: "")
+            callback(key, f?.value ?: "")
         }
     }
-    fun initProperty(key: String, value: String, callback: ((Boolean) -> Unit)? = null)
+    fun initProperty(key: String, value: String,
+                     callback: ((String, String, Boolean, String) -> Unit)? = null)
     {
         m_queue.offer{
             val f = m_db?.property()?.find(key)
+            var curr = value
             if(f == null) m_db?.property()?.insertAll(Property(key = "$key", value = "$value"))
-            callback?.invoke(f == null)
+            else curr = f.value
+            callback?.invoke(key, value, f == null, curr)
         }
     }
-    fun setProperty(key: String, value: String, callback : (()->Unit)? = null)
+    fun setProperty(key: String, value: String,
+                    callback : ((String, String)->Unit)? = null)
     {
         m_queue.offer{
             val f = m_db?.property()?.find(key)
             val valueF = f?.value ?: ""
             if(f == null) m_db?.property()?.insertAll(Property(key = "$key", value = "$value"))
-            else
-            {
-                if (valueF.compareTo(value) != 0)
-                {
-                    m_db?.property()?.update(Property(id = f?.id, key = "$key", value = "$value"))
-                }
-            }
-            callback?.invoke()
+            else if (valueF.compareTo(value) != 0)
+                m_db?.property()?.update(Property(id = f?.id, key = "$key", value = "$value"))
+            callback?.invoke(key, value)
         }
     }
     fun run() : Unit
