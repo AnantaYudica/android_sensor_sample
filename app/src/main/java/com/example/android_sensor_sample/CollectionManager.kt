@@ -11,24 +11,24 @@ class CollectionManager(private val ctx : Context)
     companion object
     {
         @Volatile private var ms_instance : CollectionManager? = null
-        fun createInstance(ctx : Context)
+        @JvmStatic fun createInstance(ctx : Context)
         {
             if (ms_instance != null) return
             ms_instance = CollectionManager(ctx)
             ms_instance?.start()
         }
-        fun destroyInstance()
+        @JvmStatic fun destroyInstance()
         {
             ms_instance?.close()
             ms_instance?.stop()
             ms_instance?.join()
             ms_instance = null
         }
-        fun hasInstance() : Boolean
+        @JvmStatic fun hasInstance() : Boolean
         {
             return ms_instance != null
         }
-        fun getInstance() : CollectionManager?
+        @JvmStatic fun getInstance() : CollectionManager?
         {
             return ms_instance
         }
@@ -40,9 +40,11 @@ class CollectionManager(private val ctx : Context)
     private var m_join : Boolean
     init
     {
+        System.loadLibrary("Bridge")
         m_thread = Thread(::run)
         m_db = Room.databaseBuilder(ctx.applicationContext,
-            Collection::class.java, "test_db").build()
+            Collection::class.java, "test_db").
+            fallbackToDestructiveMigration().build()
         m_queue = LinkedList()
         m_run = false
         m_join = true
