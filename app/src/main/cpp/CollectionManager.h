@@ -30,15 +30,19 @@ protected:
 public:
     virtual void HasProperty(const char * key_cstr,
         std::function<void(const char *, bool)> callback) = 0;
+    bool HasProperty(const char * key_cstr);
 public:
     virtual void GetProperty(const char * key_cstr,
         std::function<void(const char *, const char *)> callback) = 0;
+    void GetProperty(const char * key_cstr, char * out_value, const size_t & value_size);
 public:
     virtual void InitProperty(const char * key_cstr, const char * val_cstr,
-        std::function<void(const char *, const char *, bool, const char *)> callback = nullptr) = 0;
+        std::function<void(const char *, const char *, bool, const char *)> callback) = 0;
+    void InitProperty(const char * key_cstr, const char * val_cstr);
 public:
     virtual void SetProperty(const char * key_cstr, const char * val_cstr,
-         std::function<void(const char *, const char *)> callback = nullptr) = 0;
+         std::function<void(const char *, const char *)> callback) = 0;
+    void SetProperty(const char * key_cstr, const char * val_cstr);
 };
 
 template<typename TDerived, typename ... TArgs>
